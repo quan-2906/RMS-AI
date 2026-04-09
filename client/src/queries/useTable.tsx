@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import tableApiRequest from "../app/apiRequests/table";
+import tableApiRequest from "../apiRequests/table";
 import { UpdateTableBodyType } from "../schemaValidations/table.schema";
 
 export const useTableListQuery = () => {

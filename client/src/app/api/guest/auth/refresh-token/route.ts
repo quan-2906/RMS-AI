@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import Jwt from "jsonwebtoken";
-import guestApiRequest from "@/app/apiRequests/guest";
+import guestApiRequest from "@/apiRequests/guest";
 
 export async function POST(request: Request) {
   const cookieStore = await cookies();

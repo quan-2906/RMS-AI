@@ -1,4 +1,3 @@
-// Import the framework and instantiate it
 import envConfig, { API_URL } from '@/config'
 import { errorHandlerPlugin } from '@/plugins/errorHandler.plugins'
 import validatorCompilerPlugin from '@/plugins/validatorCompiler.plugins'

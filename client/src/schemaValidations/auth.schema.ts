@@ -3,12 +3,33 @@ import z from "zod";
 
 export const LoginBody = z
   .object({
-    email: z.string().email(),
-    password: z.string().min(6).max(100),
+    email: z
+      .string()
+      .min(1, { message: "required" })
+      .email({ message: "invalidEmail" }),
+
+    password: z
+      .string()
+      .min(1, { message: "required" })
+      .min(6, { message: "minmaxPassword" })
+      .max(100, { message: "minmaxPassword" }),
   })
   .strict();
 
 export type LoginBodyType = z.TypeOf<typeof LoginBody>;
+
+export const LOGIN_ERROR_KEYS = [
+  "required",
+  "invalidEmail",
+  "minmaxPassword",
+  "invalidCredentials",
+  "emailNotFound",
+] as const;
+
+export type LoginErrorKey = (typeof LOGIN_ERROR_KEYS)[number];
+
+export const isLoginErrorKey = (message: string): message is LoginErrorKey =>
+  LOGIN_ERROR_KEYS.includes(message as LoginErrorKey);
 
 export const LoginRes = z.object({
   data: z.object({

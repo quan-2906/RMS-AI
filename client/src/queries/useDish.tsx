@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import dishApiRequest from "../app/apiRequests/dish";
+import dishApiRequest from "../apiRequests/dish";
 import { UpdateDishBodyType } from "../schemaValidations/dish.schema";
 
 export const useDishListQuery = () => {

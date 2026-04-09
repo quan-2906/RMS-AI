@@ -147,6 +147,7 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
       const accountId = request.params.id
       const { account, socketId } = await deleteEmployeeAccount(accountId)
       if (socketId) {
+        console.log(socketId)
         fastify.io.to(socketId).emit('logout', account)
       }
       reply.send({

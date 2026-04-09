@@ -9,7 +9,7 @@ export const socketPlugin = fastifyPlugin(async (fastify) => {
   const chalk = await getChalk()
   fastify.io.use(async (socket, next) => {
     const { Authorization } = socket.handshake.auth
-
+    console.log('authorization', Authorization)
     if (!Authorization) {
       return next(new AuthError('Authorization không hợp lệ'))
     }

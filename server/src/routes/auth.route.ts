@@ -22,6 +22,7 @@ import {
 } from '@/schemaValidations/auth.schema'
 import { MessageRes, MessageResType } from '@/schemaValidations/common.schema'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
+
 export default async function authRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   const queryString = (await import('querystring')).default
   fastify.post<{ Reply: MessageResType; Body: LogoutBodyType }>(

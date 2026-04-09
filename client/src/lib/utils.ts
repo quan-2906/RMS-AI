@@ -4,12 +4,14 @@ import { twMerge } from "tailwind-merge";
 import { toast } from "sonner";
 import { EntityError, HttpError } from "./http";
 import jwt from "jsonwebtoken";
-import authApiRequest from "../app/apiRequests/auth";
+import authApiRequest from "../apiRequests/auth";
 import { DishStatus, OrderStatus, TableStatus } from "../constants/type";
 import envConfig from "../config";
 import { TokenPayload } from "@/types/jwt.types";
-import guestApiRequest from "@/app/apiRequests/guest";
-import { keyof } from "zod";
+import { format } from "date-fns";
+import { BookX, CookingPot, HandCoins, Loader, Truck } from "lucide-react";
+import { io } from "socket.io-client";
+import slugify from "slugify";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -78,6 +80,7 @@ export const removeTokensFromLocalStorage = () => {
 export const checkAndRefreshToken = async (params?: {
   onError?: () => void;
   onSuccess?: () => void;
+  force?: boolean;
 }) => {
   // Không nên đưa logic lấy access Token và refresh Token ra khỏi function "checkAndRefreshToken"
   // vì để mỗi lần mà checkAndRefreshToken() được gọi thì sẽ có 1 access và 1 refresh mới
@@ -101,16 +104,18 @@ export const checkAndRefreshToken = async (params?: {
   // Thời gian còn lại tính theo công thức :  decodedAccessToken.exp - now
   // Thời gian hết hạn của AT tính theo công thức : decodedAccessToken.exp - decodedAccessToken.iat
   if (
+    params?.force ||
     decodedAccessToken.exp - now <
-    (decodedAccessToken.exp - decodedAccessToken.iat) / 3
+      (decodedAccessToken.exp - decodedAccessToken.iat) / 3
   ) {
     // Gọi API RT
     try {
-      const role = decodedRefreshToken.role;
-      const res =
-        role === Role.Guest
-          ? await guestApiRequest.refreshToken()
-          : await authApiRequest.refreshToken();
+      const res = await authApiRequest.refreshToken();
+      // const role = decodedRefreshToken.role;
+      // const res =
+      //   role === Role.Guest
+      //     ? await guestApiRequest.refreshToken()
+      //     : await authApiRequest.refreshToken();
       setAccessTokenToLocalStorage(res.payload.data.accessToken);
       setRefreshTokenToLocalStorage(res.payload.data.refreshToken);
       params?.onSuccess && params.onSuccess();
@@ -158,13 +163,15 @@ export const getVietnameseOrderStatus = (
 ) => {
   switch (status) {
     case OrderStatus.Delivered:
-      return "Đã giao";
+      return "Đã phục vụ";
     case OrderStatus.Paid:
       return "Đã thanh toán";
     case OrderStatus.Pending:
       return "Chờ xử lý";
     case OrderStatus.Processing:
       return "Đang nấu";
+    case OrderStatus.Rejected:
+      return "Từ chối";
     default:
       "Từ chối";
   }
@@ -184,4 +191,66 @@ export const getTableLink = ({
 
 export const decodeToken = (token: string) => {
   return jwt.decode(token) as TokenPayload;
+};
+
+export function removeAccents(str: string) {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D");
+}
+
+export const simpleMatchText = (fullText: string, matchText: string) => {
+  return removeAccents(fullText.toLowerCase()).includes(
+    removeAccents(matchText.trim().toLowerCase()),
+  );
+};
+
+export const formatDateTimeToLocaleString = (date: string | Date) => {
+  return format(
+    date instanceof Date ? date : new Date(date),
+    "HH:mm:ss dd/MM/yyyy",
+  );
+};
+
+export const formatDateTimeToTimeString = (date: string | Date) => {
+  return format(date instanceof Date ? date : new Date(date), "HH:mm:ss");
+};
+
+export const generateSocketInstace = (accessToken: string) => {
+  return io(envConfig.NEXT_PUBLIC_API_ENDPOINT, {
+    auth: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const OrderStatusIcon = {
+  [OrderStatus.Pending]: Loader,
+  [OrderStatus.Processing]: CookingPot,
+  [OrderStatus.Rejected]: BookX,
+  [OrderStatus.Delivered]: Truck,
+  [OrderStatus.Paid]: HandCoins,
+};
+
+export const wrapServerApi = async <T>(fn: () => Promise<T>) => {
+  let result = null;
+
+  try {
+    result = await fn();
+  } catch (error: any) {
+    if (error.digest?.includes("NEXT_REDIRECT")) {
+      throw error;
+    }
+  }
+  return result;
+};
+
+export const generateSlugUrl = ({ name, id }: { name: string; id: number }) => {
+  return `${slugify(name)}-i.${id}`;
+};
+
+export const getIdFromSlugUrl = (slug: string) => {
+  return Number(slug.split("-i.")[1]);
 };

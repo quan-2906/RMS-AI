@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { ChangePasswordV2BodyType } from "@/schemaValidations/account.schema";
-import accountApiRequest from "@/app/apiRequests/account";
+import accountApiRequest from "@/apiRequests/account";
 
 export async function POST(request: Request) {
   const cookieStore = await cookies();

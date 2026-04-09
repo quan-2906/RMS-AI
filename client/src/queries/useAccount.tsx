@@ -1,6 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import accountApiRequest from "../app/apiRequests/account";
-import { UpdateEmployeeAccountBodyType } from "../schemaValidations/account.schema";
+import accountApiRequest from "../apiRequests/account";
+import {
+  GetGuestListQueryParamsType,
+  UpdateEmployeeAccountBodyType,
+} from "../schemaValidations/account.schema";
 
 export const useAccountMe = () => {
   return useQuery({
@@ -80,5 +83,20 @@ export const useDeleteAccountMutation = () => {
         queryKey: ["accounts"],
       });
     },
+  });
+};
+
+export const useGetGuestListQuery = (
+  queryParams: GetGuestListQueryParamsType,
+) => {
+  return useQuery({
+    queryFn: () => accountApiRequest.useGetGuestListQuery(queryParams),
+    queryKey: ["guests", queryParams],
+  });
+};
+
+export const useCreateGuestMutation = () => {
+  return useMutation({
+    mutationFn: accountApiRequest.createGuest,
   });
 };
