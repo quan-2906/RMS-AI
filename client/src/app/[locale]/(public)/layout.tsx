@@ -1,5 +1,4 @@
 import { Menu, Package2 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -34,7 +33,7 @@ export default async function Layout(
             className="flex items-center gap-2 text-lg font-semibold md:text-base"
           >
             <Package2 className="h-6 w-6" />
-            <span className="sr-only">Big boy</span>
+            <span className="sr-only">Five seasons restaurant</span>
           </Link>
           <NavItems className="text-muted-foreground transition-colors hover:text-foreground flex-shrink-0" />
         </nav>
@@ -60,7 +59,7 @@ export default async function Layout(
                 className="flex items-center gap-2 text-lg font-semibold"
               >
                 <Package2 className="h-6 w-6" />
-                <span className="sr-only">Big boy</span>
+                <span className="sr-only">Five seasons restaurant</span>
               </Link>
 
               <NavItems className="text-muted-foreground transition-colors hover:text-foreground" />
