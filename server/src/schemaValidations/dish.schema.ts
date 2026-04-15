@@ -18,6 +18,7 @@ export const DishSchema = z.object({
   description: z.string(),
   image: z.string(),
   status: z.enum(DishStatusValues),
+  rating: z.number().default(0),
   createdAt: z.date(),
   updatedAt: z.date()
 })

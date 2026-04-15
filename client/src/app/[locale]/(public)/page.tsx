@@ -7,6 +7,7 @@ import { setRequestLocale } from "next-intl/server";
 import envConfig, { Locale } from "@/config";
 import { htmlToTextForDescription } from "@/lib/server-utils";
 import { Link } from "@/i18n/navigation";
+import { Star } from "lucide-react";
 
 export async function generateMetadata(props: {
   params: Promise<{ locale: Locale }>;
@@ -96,6 +97,12 @@ export default async function Home(props: {
                 <h3 className="text-xl font-semibold">{dish.name}</h3>
                 <p className="">{dish.description}</p>
                 <p className="font-semibold">{formatCurrency(dish.price)}</p>
+                {dish.rating > 0 && (
+                  <span className="flex items-center gap-1 text-sm bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full font-medium">
+                    <Star size={12} className="fill-current" />
+                    {dish.rating}
+                  </span>
+                )}
               </div>
             </Link>
           ))}

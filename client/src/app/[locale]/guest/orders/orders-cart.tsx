@@ -11,7 +11,9 @@ import {
 } from "@/schemaValidations/order.schema";
 import Image from "next/image";
 import { useEffect, useMemo } from "react";
+import DishReviewDialog from "./dish-review-dialog";
 import { toast } from "sonner";
+import QrPaymentDialog from "./qr-payment-dialog";
 
 export default function OrderCart() {
   const { data, refetch } = useGuestGetOrderListQuery();
@@ -128,10 +130,18 @@ export default function OrderCart() {
               <Badge className="px-1 ">{order.quantity}</Badge>
             </div>
           </div>
-          <div className="flex-shrink-0 ml-auto flex justify-center items-center">
+          <div className="flex-shrink-0 ml-auto flex flex-col gap-2 justify-center items-end">
             <Badge variant={"outline"}>
               {getVietnameseOrderStatus(order.status)}
             </Badge>
+            {(order.status === OrderStatus.Paid ||
+              order.status === OrderStatus.Delivered) &&
+              order.dishSnapshot.dishId && (
+                <DishReviewDialog
+                  dishId={order.dishSnapshot.dishId}
+                  dishName={order.dishSnapshot.name}
+                />
+              )}
           </div>
         </div>
       ))}
@@ -148,6 +158,12 @@ export default function OrderCart() {
           <span>Đơn chưa thanh toán . {waitingForPaying.quantity} món </span>
           <span>{formatCurrency(waitingForPaying.price)}</span>
         </div>
+        {waitingForPaying.quantity > 0 && (
+          <QrPaymentDialog
+            amount={waitingForPaying.price}
+            onSuccess={() => refetch()}
+          />
+        )}
       </div>
     </>
   );

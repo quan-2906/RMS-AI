@@ -45,6 +45,11 @@ export default function NavItems({ className }: { className?: string }) {
       role: [Role.Guest],
     },
     {
+      title: t("review"),
+      href: "/guest/review",
+      role: [Role.Guest],
+    },
+    {
       title: t("login"),
       href: "/login",
       hideWhenLogin: true,

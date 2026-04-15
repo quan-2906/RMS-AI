@@ -25,3 +25,9 @@ export const useGuestGetOrderListQuery = () => {
     queryFn: guestApiRequest.getOrderList,
   });
 };
+
+export const useGuestPayMutation = () => {
+  return useMutation({
+    mutationFn: guestApiRequest.pay,
+  });
+};

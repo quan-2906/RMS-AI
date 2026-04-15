@@ -58,6 +58,8 @@ const guestApiRequest = {
     http.post<GuestGetOrdersResType>("/guest/orders", body),
 
   getOrderList: () => http.get<GuestGetOrdersResType>("guest/orders"),
+
+  pay: () => http.post<GuestGetOrdersResType>("guest/orders/pay"),
 };
 
 export default guestApiRequest;

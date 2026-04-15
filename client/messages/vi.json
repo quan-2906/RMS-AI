@@ -19,6 +19,20 @@
   "DishDetail": {
     "notFound": "Món ăn không tồn tại"
   },
+  "DishReview": {
+    "title": "Đánh giá món ăn",
+    "averageRating": "Điểm trung bình",
+    "totalReviews": "{count} đánh giá",
+    "noReviews": "Chưa có đánh giá nào. Hãy là người đầu tiên!",
+    "writeReview": "Viết đánh giá",
+    "yourRating": "Đánh giá của bạn",
+    "comment": "Bình luận (không bắt buộc)",
+    "submit": "Gửi đánh giá",
+    "loginToReview": "Bạn hãy đăng nhập (scan QR) để viết đánh giá",
+    "alreadyReviewed": "Bạn đã đánh giá món ăn này",
+    "deleteReview": "Xóa đánh giá",
+    "confirmDelete": "Bạn có chắc muốn xóa đánh giá này?"
+  },
   "LoginGuest": {
     "title": "Đăng nhập để gọi món",
     "description": "Nhập thông tin đăng nhập để thực hiện gọi món"
@@ -67,6 +81,7 @@
     "home": "Trang chủ",
     "menu": "Thực đơn",
     "orders": "Đơn hàng",
+    "review": "Đánh giá",
     "login": "Đăng nhập",
     "logout": "Đăng xuất",
     "manage": "Quản lý",
@@ -75,5 +90,20 @@
       "logoutCancel": "Hủy",
       "logoutConfirm": "Đăng xuất có thể dẫn đến mất dữ liệu đơn hàng của bạn"
     }
+  },
+  "GuestReview": {
+    "title": "Đánh giá món ăn",
+    "description": "Đánh giá các món bạn đã thưởng thức",
+    "noDishes": "Bạn chưa có món ăn nào cần đánh giá. Hãy đặt món trước nhé!",
+    "alreadyReviewed": "Đã đánh giá",
+    "pendingReview": "Chưa đánh giá",
+    "yourRating": "Chọn số sao",
+    "commentPlaceholder": "Bạn thấy món này thế nào? (không bắt buộc)",
+    "submit": "Gửi đánh giá",
+    "deleteReview": "Xóa đánh giá",
+    "confirmDelete": "Bạn có chắc muốn xóa đánh giá này?",
+    "reviewSuccess": "Đánh giá thành công!",
+    "deleteSuccess": "Đã xóa đánh giá",
+    "cancel": "Hủy"
   }
 }

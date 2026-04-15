@@ -206,3 +206,57 @@ export const guestGetOrdersController = async (guestId: number) => {
   })
   return orders
 }
+
+export const guestPayOrdersController = async (guestId: number) => {
+  const orders = await prisma.order.findMany({
+    where: {
+      guestId,
+      status: {
+        in: [OrderStatus.Pending, OrderStatus.Processing, OrderStatus.Delivered]
+      }
+    }
+  })
+  if (orders.length === 0) {
+    throw new Error('Không có hóa đơn nào cần thanh toán')
+  }
+  await prisma.$transaction(async (tx) => {
+    const orderIds = orders.map((order) => order.id)
+    await tx.order.updateMany({
+      where: {
+        id: {
+          in: orderIds
+        }
+      },
+      data: {
+        status: OrderStatus.Paid
+      }
+    })
+  })
+  const [ordersResult, sockerRecord] = await Promise.all([
+    prisma.order.findMany({
+      where: {
+        id: {
+          in: orders.map((order) => order.id)
+        }
+      },
+      include: {
+        dishSnapshot: true,
+        orderHandler: true,
+        guest: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    }),
+    prisma.socket.findUnique({
+      where: {
+        guestId
+      }
+    })
+  ])
+  return {
+    orders: ordersResult,
+    socketId: sockerRecord?.socketId
+  }
+}
+

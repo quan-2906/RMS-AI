@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -18,11 +18,11 @@ model Account {
   name         String
   email        String         @unique
   password     String
-  avatar       String?
+  avatar       String?        @db.Text
   role         String         @default("Employee") // Owner, Employee
   orders       Order[]
   employees    Account[]      @relation("OwnerEmployee")
-  owner        Account?       @relation("OwnerEmployee", fields: [ownerId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  owner        Account?       @relation("OwnerEmployee", fields: [ownerId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   ownerId      Int?
   refreshToken RefreshToken[]
   sockets      Socket[]
@@ -34,10 +34,11 @@ model Dish {
   id            Int            @id @default(autoincrement())
   name          String
   price         Int
-  description   String
-  image         String
+  description   String         @db.Text
+  image         String         @db.Text
   status        String         @default("Available")
   dishSnapshots DishSnapshot[]
+  reviews       Review[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
@@ -46,11 +47,11 @@ model DishSnapshot {
   id          Int      @id @default(autoincrement())
   name        String
   price       Int
-  description String
-  image       String
+  description String   @db.Text
+  image       String   @db.Text
   status      String   @default("Available")
   dishId      Int?
-  dish        Dish?    @relation(fields: [dishId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  dish        Dish?    @relation(fields: [dishId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   updatedAt   DateTime @updatedAt
   createdAt   DateTime @default(now())
   order       Order?
@@ -62,7 +63,7 @@ model Table {
   orders    Order[]
   guests    Guest[]
   status    String   @default("Available")
-  token     String
+  token     String   @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -70,13 +71,13 @@ model Table {
 model Order {
   id             Int          @id @default(autoincrement())
   guestId        Int?
-  guest          Guest?       @relation(fields: [guestId], references: [id], onDelete: SetNull, onUpdate: NoAction)
-  table          Table?       @relation(fields: [tableNumber], references: [number], onDelete: SetNull, onUpdate: NoAction)
+  guest          Guest?       @relation(fields: [guestId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  table          Table?       @relation(fields: [tableNumber], references: [number], onDelete: SetNull, onUpdate: Cascade)
   tableNumber    Int?
   dishSnapshot   DishSnapshot @relation(fields: [dishSnapshotId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   dishSnapshotId Int          @unique
   quantity       Int
-  orderHandler   Account?     @relation(fields: [orderHandlerId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  orderHandler   Account?     @relation(fields: [orderHandlerId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   orderHandlerId Int?
   status         String       @default("Pending")
   createdAt      DateTime     @default(now())
@@ -84,9 +85,9 @@ model Order {
 }
 
 model RefreshToken {
-  token     String   @id
+  token     String   @id @db.VarChar(512)
   accountId Int
-  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   expiresAt DateTime
   createdAt DateTime @default(now())
 }
@@ -94,10 +95,11 @@ model RefreshToken {
 model Guest {
   id                    Int       @id @default(autoincrement())
   name                  String
-  table                 Table?    @relation(fields: [tableNumber], references: [number], onDelete: SetNull, onUpdate: NoAction)
+  table                 Table?    @relation(fields: [tableNumber], references: [number], onDelete: SetNull, onUpdate: Cascade)
   tableNumber           Int?
   orders                Order[]
-  refreshToken          String?
+  reviews               Review[]
+  refreshToken          String?   @db.Text
   refreshTokenExpiresAt DateTime?
   sockets               Socket[]
   createdAt             DateTime  @default(now())
@@ -107,7 +109,21 @@ model Guest {
 model Socket {
   socketId  String   @id
   accountId Int?     @unique
-  account   Account? @relation(fields: [accountId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  account   Account? @relation(fields: [accountId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   guestId   Int?     @unique
-  guest     Guest?   @relation(fields: [guestId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  guest     Guest?   @relation(fields: [guestId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  dishId    Int
+  dish      Dish     @relation(fields: [dishId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  guestId   Int
+  guest     Guest    @relation(fields: [guestId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  rating    Int 
+  comment   String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([guestId, dishId])
 }

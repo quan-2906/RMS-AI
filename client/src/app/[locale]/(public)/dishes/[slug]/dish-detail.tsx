@@ -1,6 +1,7 @@
 import { formatCurrency } from "@/lib/utils";
 import { DishResType } from "@/schemaValidations/dish.schema";
 import Image from "next/image";
+import DishReviews from "./dish-review";
 
 export default async function DishDetail({
   dish,
@@ -31,6 +32,7 @@ export default async function DishDetail({
         />
       )}
       <p>{dish.description}</p>
+      <DishReviews dishId={dish.id} />
     </div>
   );
 }
