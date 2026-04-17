@@ -259,4 +259,3 @@ export const guestPayOrdersController = async (guestId: number) => {
     socketId: sockerRecord?.socketId
   }
 }
-

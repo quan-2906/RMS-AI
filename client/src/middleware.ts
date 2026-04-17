@@ -99,7 +99,13 @@ export function middleware(request: NextRequest) {
   return response;
 }
 
-// See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/", "/(vi|en)/:path*", "/tables/:path*"],
+  matcher: [
+    "/",
+    "/(vi|en)/:path*",
+    "/manage/:path*",
+    "/guest/:path*",
+    "/login/:path*",
+    "/tables/:path*",
+  ],
 };

@@ -45,6 +45,7 @@ function OAuthContent() {
           toast("Lỗi", {
             description: message || "Có lỗi xãy ra",
           });
+          router.push("/login");
         });
         count.current++;
       }

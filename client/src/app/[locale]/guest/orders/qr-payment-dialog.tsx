@@ -41,9 +41,8 @@ export default function QrPaymentDialog({
     }
   };
 
-  // MockVietQR, thay bằng tài khoản thực tế sau
   const bankBin = "970422"; // MB Bank
-  const bankAccount = "123456789"; 
+  const bankAccount = "0826477024";
   const qrImage = `https://img.vietqr.io/image/${bankBin}-${bankAccount}-compact.png?amount=${amount}&addInfo=Thanh toan don hang`;
 
   return (
@@ -55,7 +54,8 @@ export default function QrPaymentDialog({
         <DialogHeader>
           <DialogTitle>Thanh toán đơn hàng</DialogTitle>
           <DialogDescription>
-            Quét mã QR bằng ứng dụng ngân hàng để thanh toán {formatCurrency(amount)}
+            Quét mã QR bằng ứng dụng ngân hàng để thanh toán{" "}
+            {formatCurrency(amount)}
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-center py-4">

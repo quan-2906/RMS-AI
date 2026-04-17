@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "api-bigboy.duthanhduoc.com",
+        hostname: "api.nhahang-cua-toi.com",
         pathname: "/**",
       },
       {
