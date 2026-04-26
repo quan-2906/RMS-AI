@@ -82,7 +82,10 @@ export default function EditOrder({
         quantity,
       });
       setTimeout(() => {
-        setSelectedDish(data.payload.data.dishSnapshot);
+        setSelectedDish({
+          ...data.payload.data.dishSnapshot,
+          rating: 0,
+        });
       }, 0);
     }
   }, [data, form]);

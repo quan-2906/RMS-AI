@@ -56,6 +56,7 @@ import { TableListResType } from "@/schemaValidations/table.schema";
 import { useDeleteTableMutation, useTableListQuery } from "@/queries/useTable";
 import QRCodeTable from "@/components/ui/qrcode-table";
 import { toast } from "sonner";
+import { useAppStore } from "@/components/ui/app-provider";
 
 type TableItem = TableListResType["data"][0];
 
@@ -203,6 +204,8 @@ export default function TableTable() {
   const [tableDelete, setTableDelete] = useState<TableItem | null>(null);
   const tableListQuery = useTableListQuery();
   const data = tableListQuery.data?.payload.data ?? [];
+  const refetchTableList = tableListQuery.refetch;
+  const socket = useAppStore((state) => state.socket);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -240,6 +243,34 @@ export default function TableTable() {
       pageSize: PAGE_SIZE,
     });
   }, [table, pageIndex]);
+
+  useEffect(() => {
+    if (socket?.connected) {
+      onConnect();
+    }
+
+    function onConnect() {
+      console.log(socket?.id);
+    }
+
+    function onDisconnect() {
+      console.log("disconnect");
+    }
+
+    function onUpdateTable() {
+      refetchTableList();
+    }
+
+    socket?.on("update-table", onUpdateTable);
+    socket?.on("connect", onConnect);
+    socket?.on("disconnect", onDisconnect);
+    
+    return () => {
+      socket?.off("connect", onConnect);
+      socket?.off("disconnect", onDisconnect);
+      socket?.off("update-table", onUpdateTable);
+    };
+  }, [refetchTableList, socket]);
 
   return (
     <TableTableContext.Provider

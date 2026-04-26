@@ -39,7 +39,9 @@ const configSchema = z.object({
   DOCKER: z.enum(['true', 'false']).transform((val) => val === 'true'),
   PRODUCTION_URL: z.string(),
   SERVER_TIMEZONE: z.string(),
-  PAUSE_SOME_ENDPOINTS: z.enum(['true', 'false']).transform((val) => val === 'true')
+  PAUSE_SOME_ENDPOINTS: z.enum(['true', 'false']).transform((val) => val === 'true'),
+  GEMINI_API_KEY: z.string().optional(),
+  GROQ_API_KEY: z.string().optional()
 })
 
 const configServer = configSchema.safeParse(process.env)

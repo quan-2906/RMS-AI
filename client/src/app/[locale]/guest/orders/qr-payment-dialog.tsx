@@ -41,7 +41,7 @@ export default function QrPaymentDialog({
     }
   };
 
-  const bankBin = "970422"; // MB Bank
+  const bankBin = "970422";
   const bankAccount = "0826477024";
   const qrImage = `https://img.vietqr.io/image/${bankBin}-${bankAccount}-compact.png?amount=${amount}&addInfo=Thanh toan don hang`;
 
@@ -65,19 +65,9 @@ export default function QrPaymentDialog({
             width={250}
             height={250}
             className="rounded-md"
-            unoptimized // Bypass Next.js image optimization cho ảnh từ externe domain nếu bị lỗi hostname
+            unoptimized
           />
         </div>
-        <DialogFooter>
-          <Button
-            type="button"
-            onClick={handlePay}
-            disabled={guestPayMutation.isPending}
-            className="w-full"
-          >
-            Tôi đã chuyển khoản
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -22,7 +22,9 @@ import orderRoutes from '@/routes/order.route'
 import { socketPlugin } from '@/plugins/socket.plugins'
 import indicatorRoutes from '@/routes/indicator.route'
 import autoRemoveRefreshTokenJob from '@/jobs/autoRemoveRefreshToken.job'
+import autoReleaseTableJob from '@/jobs/autoReleaseTable.job'
 import reviewRoutes from './routes/review.route'
+import aiRoutes from './routes/ai.route'
 
 const fastify = Fastify({
   logger: false
@@ -56,6 +58,7 @@ const start = async () => {
       }
     })
     fastify.register(socketPlugin)
+    autoReleaseTableJob(fastify)
     fastify.register(authRoutes, {
       prefix: '/auth'
     })
@@ -89,6 +92,10 @@ const start = async () => {
     fastify.register(reviewRoutes, {
       prefix: '/reviews'
     })
+    fastify.register(aiRoutes, {
+      prefix: '/ai'
+    })
+
     await initOwnerAccount()
     await fastify.listen({
       port: envConfig.PORT,

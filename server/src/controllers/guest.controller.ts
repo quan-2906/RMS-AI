@@ -138,9 +138,6 @@ export const guestCreateOrdersController = async (guestId: number, body: GuestCr
     if (table.status === TableStatus.Hidden) {
       throw new Error(`Bàn ${table.number} đã bị ẩn, vui lòng đăng xuất và chọn bàn khác`)
     }
-    if (table.status === TableStatus.Reserved) {
-      throw new Error(`Bàn ${table.number} đã được đặt trước, vui lòng đăng xuất và chọn bàn khác`)
-    }
     const orders = await Promise.all(
       body.map(async (order) => {
         const dish = await tx.dish.findUniqueOrThrow({

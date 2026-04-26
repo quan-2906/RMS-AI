@@ -17,6 +17,8 @@ import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import { CardFooter } from "@/components/ui/card";
 import GoogleTag from "@/components/ui/google-tag";
+import AiChatbot from "@/components/ai-chatbot";
+
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -79,8 +81,10 @@ export default async function RootLayout(
               disableTransitionOnChange
             >
               {children}
+              <AiChatbot />
               <CardFooter />
               <Toaster />
+
             </ThemeProvider>
           </AppProvider>
         </NextIntlClientProvider>
