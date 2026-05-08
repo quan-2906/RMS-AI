@@ -40,6 +40,7 @@ import { Upload } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 export default function EditEmployee({
   id,
@@ -50,6 +51,9 @@ export default function EditEmployee({
   setId: (value: number | undefined) => void;
   onSubmitSuccess?: () => void;
 }) {
+  const t = useTranslations("EditEmployee");
+  const tAdd = useTranslations("AddEmployee");
+  const tManage = useTranslations("ManageAccounts");
   const [file, setFile] = useState<File | null>(null);
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
   const { data } = useGetAccount({
@@ -115,7 +119,7 @@ export default function EditEmployee({
         };
       }
       const result = await updateAccountMutation.mutateAsync(body);
-      toast("Thành Công", {
+      toast(tManage("success"), {
         description: result.payload.message,
       });
       reset();
@@ -142,11 +146,11 @@ export default function EditEmployee({
         }
       }}
     >
-      <AlertDialogContent className="sm:max-w-[600px] max-h-screen overflow-auto">
+      <AlertDialogContent className="sm:max-w-[600px] max-h-screen overflow-auto bg-surface-container border-border text-foreground rounded-2xl shadow-2xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Cập nhật tài khoản</AlertDialogTitle>
+          <AlertDialogTitle>{t("title")}</AlertDialogTitle>
           <AlertDialogDescription>
-            Các trường tên, email, mật khẩu là bắt buộc
+            {tAdd("requiredFields")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <Form {...form}>
@@ -166,7 +170,7 @@ export default function EditEmployee({
                       <Avatar className="aspect-square w-[100px] h-[100px] rounded-md object-cover">
                         <AvatarImage src={previewAvatarFromFile} />
                         <AvatarFallback className="rounded-none">
-                          {name || "Avatar"}
+                          {name || tAdd("avatarLabel")}
                         </AvatarFallback>
                       </Avatar>
                       <input
@@ -190,7 +194,7 @@ export default function EditEmployee({
                         onClick={() => avatarInputRef.current?.click()}
                       >
                         <Upload className="h-4 w-4 text-muted-foreground" />
-                        <span className="sr-only">Upload</span>
+                        <span className="sr-only">{tAdd("upload")}</span>
                       </button>
                     </div>
                   </FormItem>
@@ -203,7 +207,7 @@ export default function EditEmployee({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="name">Tên</Label>
+                      <Label htmlFor="name">{tAdd("name")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input id="name" className="w-full" {...field} />
                         <FormMessage />
@@ -219,7 +223,7 @@ export default function EditEmployee({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="email">{tAdd("email")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input id="email" className="w-full" {...field} />
                         <FormMessage />
@@ -235,7 +239,7 @@ export default function EditEmployee({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="role">Vai trò</Label>
+                      <Label htmlFor="role">{tAdd("role")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Select
                           onValueChange={field.onChange}
@@ -243,7 +247,7 @@ export default function EditEmployee({
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Chọn vai trò" />
+                              <SelectValue placeholder={tAdd("selectRole")} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -270,7 +274,7 @@ export default function EditEmployee({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="email">Đổi mật khẩu</Label>
+                      <Label htmlFor="email">{t("changePassword")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Switch
                           checked={field.value}
@@ -289,7 +293,7 @@ export default function EditEmployee({
                   render={({ field }) => (
                     <FormItem>
                       <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                        <Label htmlFor="password">Mật khẩu mới</Label>
+                        <Label htmlFor="password">{t("newPassword")}</Label>
                         <div className="col-span-3 w-full space-y-2">
                           <Input
                             id="password"
@@ -312,7 +316,7 @@ export default function EditEmployee({
                     <FormItem>
                       <div className="grid grid-cols-4 items-center justify-items-start gap-4">
                         <Label htmlFor="confirmPassword">
-                          Xác nhận mật khẩu mới
+                          {t("confirmNewPassword")}
                         </Label>
                         <div className="col-span-3 w-full space-y-2">
                           <Input
@@ -333,7 +337,7 @@ export default function EditEmployee({
         </Form>
         <AlertDialogFooter>
           <Button type="submit" form="edit-employee-form">
-            Lưu
+            {t("submit")}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

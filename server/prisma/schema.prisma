@@ -36,6 +36,7 @@ model Dish {
   price         Int
   description   String         @db.Text
   image         String         @db.Text
+  images360     Json?
   status        String         @default("Available")
   dishSnapshots DishSnapshot[]
   reviews       Review[]
@@ -49,6 +50,7 @@ model DishSnapshot {
   price       Int
   description String   @db.Text
   image       String   @db.Text
+  images360   Json?
   status      String   @default("Available")
   dishId      Int?
   dish        Dish?    @relation(fields: [dishId], references: [id], onDelete: SetNull, onUpdate: Cascade)

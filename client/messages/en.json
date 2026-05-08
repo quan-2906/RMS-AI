@@ -11,17 +11,41 @@
     "defaultTitle": "Five Seasons Restaurant"
   },
   "HomePage": {
-    "title": "Home page",
-    "description": "Craving a classic American diner experience? Look no further than Big Boy! Savor our iconic Big Boy burger, juicy and flavorful, paired with creamy milkshakes and crispy fries. Perfect for families and friends!",
-    "slogan": "Taste good, every moment",
-    "h2": "A variety of dishes"
+    "title": "Five Seasons Restaurant",
+    "description": "Architecture is shaping the future of Vietnamese cuisine by creating a fusion of traditional flavors.",
+    "h2": "Featured Menu",
+    "reserveNow": "Book a Table",
+    "discoverMenu": "Discover Menu",
+    "aiSelection": "AI Optimized Selection"
+  },
+  "Footer": {
+    "contact": "Contact",
+    "discover": "Discover",
+    "privateRoom": "Private Room",
+    "aiPhilosophy": "AI Philosophy",
+    "booking": "Booking",
+    "giftCard": "Gift Card",
+    "address": "1 Nguyen Van Linh, Da Nang City"
+  },
+  "AiChatbot": {
+    "title": "RMS-AI Virtual Assistant",
+    "welcome": "Hello! I am your RMS-AI assistant. How can I help you today?",
+    "paymentSuccess": "Thank you for your successful payment! The system has recorded it. See you next time!",
+    "error": "Sorry, an error occurred. Please try again!",
+    "placeholder": "Ask RMS-AI...",
+    "you": "You"
   },
   "Login": {
     "title": "Login",
     "description": "Manager login area",
     "cardDescription": "Enter your email and password to log in to the system",
     "buttonLogin": "Login",
-    "loginWithGoogle": "Login with Google"
+    "loginWithGoogle": "Login with Google",
+    "placeholderEmail": "Your email",
+    "labelPassword": "Password",
+    "forgotPassword": "Forgot password?",
+    "or": "or",
+    "backToHome": "Back to Home"
   },
   "DishDetail": {
     "notFound": "Dish not found"
@@ -38,7 +62,11 @@
     "loginToReview": "Please login (scan QR) to write a review",
     "alreadyReviewed": "You have already reviewed this dish",
     "deleteReview": "Delete Review",
-    "confirmDelete": "Are you sure you want to delete your review?"
+    "confirmDelete": "Are you sure you want to delete your review?",
+    "button": "Review",
+    "ratingError": "Please select from 1 to 5 stars",
+    "success": "Review submitted successfully!",
+    "placeholder": "What do you think about this dish?"
   },
   "LoginGuest": {
     "title": "Login to order",
@@ -105,5 +133,310 @@
     "reviewSuccess": "Review submitted!",
     "deleteSuccess": "Review deleted",
     "cancel": "Cancel"
+  },
+  "Dashboard": {
+    "title": "Revenue Report",
+    "description": "Monitor revenue, order volume, and dish ratings",
+    "from": "From",
+    "to": "To",
+    "reset": "Reset",
+    "totalRevenue": "Total Revenue",
+    "guests": "Guests",
+    "orders": "Orders",
+    "servingTables": "Serving Tables",
+    "ordered": "Ordered",
+    "paid": "Paid",
+    "revenueChart": "Revenue Chart",
+    "dishRanking": "Dish Ranking",
+    "dishRankingDescription": "Most ordered dishes"
+  },
+  "ManageNav": {
+    "dashboard": "Dashboard",
+    "orders": "Orders",
+    "tables": "Tables",
+    "dishes": "Dishes",
+    "accounts": "Accounts",
+    "settings": "Settings",
+    "logout": "Logout",
+    "support": "Support",
+    "toggleMenu": "Toggle Menu"
+  },
+  "OrderStatus": {
+    "Pending": "Pending",
+    "Processing": "Cooking",
+    "Rejected": "Rejected",
+    "Delivered": "Served",
+    "Paid": "Paid"
+  },
+  "ManageOrders": {
+    "title": "Orders",
+    "description": "Manage orders and customer service status",
+    "createOrder": "Create Order",
+    "from": "From",
+    "to": "To",
+    "reset": "Reset",
+    "table": "Table",
+    "customer": "Customer",
+    "dish": "Dish",
+    "status": "Status",
+    "handler": "Handler",
+    "createdAt": "Created/Updated",
+    "placeholderGuest": "Guest name",
+    "placeholderTable": "Table num",
+    "noResults": "No results.",
+    "showing": "Showing",
+    "of": "of",
+    "results": "results",
+    "deleted": "Deleted",
+    "ready": "Ready",
+    "serving": "Serving",
+    "guests": "guests",
+    "items": "items",
+    "edit": "Edit",
+    "guestSittingAtTable": "Guests sitting at table",
+    "notifications": {
+      "updateTitle": "Order Update",
+      "updateDesc": "{name} (Qty: {quantity}) updated to {status}",
+      "newOrderTitle": "New Order",
+      "newOrderDesc": "{name} at table {table} placed {count} items",
+      "paymentTitle": "Order Payment",
+      "paymentDesc": "{name} at table {table} paid successfully for {count} items"
+    }
+  },
+  "AddOrder": {
+    "title": "Create Order",
+    "isNewGuest": "New Customer",
+    "customerName": "Customer Name",
+    "selectTable": "Select Table",
+    "selectedGuest": "Selected Guest",
+    "table": "Table",
+    "outOfStock": "Out of stock",
+    "placeOrder": "Place Order",
+    "items": "items",
+    "selectCustomer": "Select Customer",
+    "selectCustomerDesc": "Please select a customer"
+  },
+  "GuestDetail": {
+    "name": "Name",
+    "table": "Table",
+    "registrationDate": "Registration Date",
+    "orders": "Orders",
+    "unpaid": "Unpaid",
+    "paid": "Paid",
+    "payAll": "Pay All ({count} items)",
+    "created": "Created",
+    "updated": "Updated"
+  },
+  "ManageTables": {
+    "title": "Tables",
+    "description": "Manage table list, capacity, and QR codes for guests",
+    "filterPlaceholder": "Filter table number...",
+    "table": "Table Number",
+    "capacity": "Capacity",
+    "status": "Status",
+    "qrCode": "QR Code",
+    "showing": "Showing",
+    "in": "of",
+    "results": "results",
+    "noResults": "No results.",
+    "success": "Success",
+    "edit": "Edit",
+    "delete": "Delete",
+    "actions": "Actions"
+  },
+  "TableStatus": {
+    "Available": "Available",
+    "Hidden": "Hidden",
+    "Reserved": "Reserved"
+  },
+  "AddTable": {
+    "title": "Add Table",
+    "buttonAdd": "Add Table",
+    "number": "Table Number",
+    "capacity": "Guest Capacity",
+    "status": "Status",
+    "selectStatus": "Select status",
+    "submit": "Add"
+  },
+  "EditTable": {
+    "title": "Update Table",
+    "submit": "Save",
+    "changeQrCode": "Change QR Code",
+    "qrUrl": "Ordering URL"
+  },
+  "DeleteTable": {
+    "title": "Delete Table?",
+    "description": "Table {number} will be permanently deleted",
+    "cancel": "Cancel",
+    "continue": "Continue"
+  },
+  "ManageDishes": {
+    "title": "Dishes Management",
+    "description": "List of the restaurant's signature dishes",
+    "filterPlaceholder": "Filter name...",
+    "id": "ID",
+    "image": "Image",
+    "name": "Name",
+    "price": "Price",
+    "descriptionLabel": "Description",
+    "status": "Status",
+    "actions": "Actions",
+    "showing": "Showing",
+    "in": "of",
+    "results": "results",
+    "noResults": "No results.",
+    "success": "Success",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "DishStatus": {
+    "Available": "Available",
+    "Hidden": "Hidden",
+    "Unavailable": "Unavailable"
+  },
+  "AddDish": {
+    "title": "Add Dish",
+    "buttonAdd": "Add Dish",
+    "name": "Dish Name",
+    "price": "Price",
+    "description": "Dish Description",
+    "status": "Status",
+    "selectStatus": "Select status",
+    "submit": "Add",
+    "imageLabel": "Image",
+    "chooseImage": "Choose image",
+    "selectImage": "Please select an image",
+    "upload": "Upload"
+  },
+  "EditDish": {
+    "title": "Update Dish",
+    "submit": "Save",
+    "requiredFields": "The following fields are required: Name, image"
+  },
+  "DeleteDish": {
+    "title": "Delete Dish?",
+    "description": "Dish {name} will be permanently deleted",
+    "cancel": "Cancel",
+    "continue": "Continue"
+  },
+  "ManageAccounts": {
+    "title": "Employee Accounts",
+    "description": "Manage the restaurant's employee accounts",
+    "filterPlaceholder": "Filter email...",
+    "id": "ID",
+    "avatar": "Avatar",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "actions": "Actions",
+    "showing": "Showing",
+    "in": "of",
+    "results": "results",
+    "noResults": "No results.",
+    "success": "Success",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "AddEmployee": {
+    "title": "Add Employee",
+    "buttonAdd": "Add Employee",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "role": "Role",
+    "submit": "Add",
+    "avatarLabel": "Avatar",
+    "selectAvatar": "Select image",
+    "success": "Success",
+    "requiredFields": "Name, email, and password fields are required",
+    "upload": "Upload",
+    "selectRole": "Select role"
+  },
+  "EditEmployee": {
+    "title": "Update Employee",
+    "submit": "Save",
+    "changePassword": "Change Password",
+    "success": "Success",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password"
+  },
+  "DeleteEmployee": {
+    "title": "Delete Employee?",
+    "description": "Account {name} will be permanently deleted",
+    "cancel": "Cancel",
+    "continue": "Continue"
+  },
+  "Settings": {
+    "title": "Settings",
+    "description": "Manage personal information and password"
+  },
+  "UpdateProfile": {
+    "title": "Personal Information",
+    "name": "Name",
+    "submit": "Save Profile",
+    "avatarLabel": "Avatar",
+    "selectAvatar": "Select image",
+    "success": "Success",
+    "cancel": "Cancel"
+  },
+  "ChangePassword": {
+    "title": "Change Password",
+    "oldPassword": "Old Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "submit": "Save Profile",
+    "success": "Password changed successfully",
+    "cancel": "Cancel"
+  },
+  "GuestLogin": {
+    "welcome": "Welcome to Five Seasons Restaurant",
+    "tableNumber": "Table No. {number}",
+    "yourName": "Your Name",
+    "namePlaceholder": "Enter your name...",
+    "submit": "Start Ordering",
+    "footer": "Scan QR code on table to start"
+  },
+  "GuestMenu": {
+    "all": "All",
+    "appetizer": "Appetizers",
+    "mainCourse": "Main Courses",
+    "drink": "Drinks",
+    "dessert": "Desserts",
+    "noDishes": "No dishes found in this category.",
+    "outOfStock": "Out of stock",
+    "total": "Total",
+    "orderButton": "Order {count} items",
+    "table": "Table {number}"
+  },
+  "GuestOrders": {
+    "title": "Orders",
+    "description": "Manage and pay for the items you have ordered",
+    "status": {
+      "Pending": "Pending",
+      "Processing": "Processing",
+      "Delivered": "Delivered",
+      "Paid": "Paid",
+      "Rejected": "Rejected"
+    },
+    "payment": "Payment",
+    "total": "Total",
+    "noOrders": "You haven't ordered anything yet.",
+    "backToMenu": "Back to Menu",
+    "paidOrders": "Paid orders ({count} items)",
+    "unpaidOrders": "Unpaid orders ({count} items)",
+    "updateOrderToast": "Order Update",
+    "updateOrderDescription": "Item {name} (Qty: {quantity}) has been updated to {status}",
+    "paymentToast": "Order Payment",
+    "paymentDescription": "{name} at table {tableNumber} successfully paid for {count} orders"
+  },
+
+  "QrPayment": {
+    "button": "Pay with QR",
+    "title": "Order Payment",
+    "description": "Scan QR code with your banking app to pay {amount}",
+    "success": "Payment successful!",
+    "qrAlt": "Payment QR Code",
+    "qrInfo": "Order payment"
   }
 }

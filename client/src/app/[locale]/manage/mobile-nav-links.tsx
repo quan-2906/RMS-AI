@@ -14,8 +14,10 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/components/ui/app-provider";
+import { useTranslations } from "next-intl";
 
 export default function MobileNavLinks() {
+  const t = useTranslations("ManageNav");
   const pathname = usePathname();
   const role = useAppStore((state) => state.role);
 
@@ -24,7 +26,7 @@ export default function MobileNavLinks() {
       <SheetTrigger asChild>
         <Button size="icon" variant="outline" className="sm:hidden">
           <PanelLeft className="h-5 w-5" />
-          <span className="sr-only">Toggle Menu</span>
+          <span className="sr-only">{t("toggleMenu")}</span>
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="sm:max-w-xs">
@@ -56,7 +58,7 @@ export default function MobileNavLinks() {
                 )}
               >
                 <Item.Icon className="h-5 w-5" />
-                {Item.title}
+                {t(Item.title as any)}
               </Link>
             );
           })}

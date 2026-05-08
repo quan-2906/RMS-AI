@@ -16,6 +16,7 @@ import { useCreateReviewMutation } from "@/queries/useReview";
 import { Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 export default function DishReviewDialog({
   dishId,
@@ -24,6 +25,7 @@ export default function DishReviewDialog({
   dishId: number;
   dishName: string;
 }) {
+  const t = useTranslations("DishReview");
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
@@ -32,7 +34,7 @@ export default function DishReviewDialog({
   const handleReview = async () => {
     try {
       if (rating < 1 || rating > 5) {
-        toast.error("Vui lòng chọn từ 1 đến 5 sao");
+        toast.error(t("ratingError"));
         return;
       }
       await createReviewMutation.mutateAsync({
@@ -40,7 +42,7 @@ export default function DishReviewDialog({
         rating,
         comment,
       });
-      toast.success("Đánh giá thành công!");
+      toast.success(t("success"));
       setOpen(false);
     } catch (error) {
       handleErrorApi({
@@ -53,16 +55,16 @@ export default function DishReviewDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          variant={"outline"}
-          size={"sm"}
-          className="h-7 px-3 text-xs w-fit"
+          variant="outline"
+          size="sm"
+          className="h-8 px-4 text-xs w-fit border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground font-medium rounded-full"
         >
-          Đánh giá
+          {t("button")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] w-[95vw] rounded-2xl bg-surface-container border-border text-foreground shadow-2xl p-6">
         <DialogHeader>
-          <DialogTitle>Đánh giá món ăn</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>{dishName}</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -87,18 +89,19 @@ export default function DishReviewDialog({
           <Textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            placeholder="Bạn thấy món ăn này thế nào?"
-            className="col-span-4"
+            placeholder={t("placeholder")}
+            className="col-span-4 bg-background border-border text-foreground rounded-xl focus-visible:ring-secondary"
             rows={4}
           />
         </div>
-        <DialogFooter>
+        <DialogFooter className="mt-2">
           <Button
             type="button"
             onClick={handleReview}
             disabled={createReviewMutation.isPending}
+            className="w-full h-12 rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/90 font-semibold shadow-[0_0_15px_rgba(212,175,55,0.2)]"
           >
-            Lưu đánh giá
+            {t("submit")}
           </Button>
         </DialogFooter>
       </DialogContent>

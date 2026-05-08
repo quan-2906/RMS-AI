@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { ColumnDef } from "@tanstack/react-table";
@@ -38,11 +39,24 @@ import { OrderTableContext } from "@/app/[locale]/manage/orders/order-table";
 import OrderGuestDetail from "@/app/[locale]/manage/orders/order-guest-detail";
 
 type OrderItem = GetOrdersResType["data"][0];
-const orderTableColumns: ColumnDef<OrderItem>[] = [
-  {
-    accessorKey: "tableNumber",
-    header: "Bàn",
-    cell: ({ row }) => <div>{row.getValue("tableNumber")}</div>,
+const useOrderTableColumns = (
+  setOrderIdEdit: (value: number | undefined) => void,
+  orderObjectByGuestId: OrderObjectByGuestID,
+  changeStatus: (payload: {
+    orderId: number;
+    dishId: number;
+    status: (typeof OrderStatusValues)[number];
+    quantity: number;
+  }) => void,
+): ColumnDef<OrderItem>[] => {
+  const t = useTranslations("ManageOrders");
+  const tStatus = useTranslations("OrderStatus");
+
+  return [
+    {
+      accessorKey: "tableNumber",
+      header: t("table"),
+      cell: ({ row }) => <div>{row.getValue("tableNumber")}</div>,
     filterFn: (row, columnId, filterValue: string) => {
       if (filterValue === undefined) return true;
       return simpleMatchText(
@@ -61,7 +75,7 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
         <div>
           {!guest && (
             <div>
-              <span>Đã bị xóa</span>
+              <span>{t("deleted")}</span>
             </div>
           )}
           {guest && (
@@ -86,14 +100,14 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
     filterFn: (row, columnId, filterValue: string) => {
       if (filterValue === undefined) return true;
       return simpleMatchText(
-        row.original.guest?.name ?? "Đã bị xóa",
+        row.original.guest?.name ?? t("deleted"),
         String(filterValue),
       );
     },
   },
   {
     id: "dishName",
-    header: "Món ăn",
+    header: t("dish"),
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         <Popover>
@@ -146,7 +160,7 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
   },
   {
     accessorKey: "status",
-    header: "Trạng thái",
+    header: t("status"),
     cell: function Cell({ row }) {
       const { changeStatus } = useContext(OrderTableContext);
       const changeOrderStatus = async (
@@ -173,7 +187,7 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
           <SelectContent>
             {OrderStatusValues.map((status) => (
               <SelectItem key={status} value={status}>
-                {getVietnameseOrderStatus(status)}
+                {tStatus(status)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -183,12 +197,12 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
   },
   {
     id: "orderHandlerName",
-    header: "Người xử lý",
+    header: t("handler"),
     cell: ({ row }) => <div>{row.original.orderHandler?.name ?? ""}</div>,
   },
   {
     accessorKey: "createdAt",
-    header: () => <div>Tạo/Cập nhật</div>,
+    header: () => <div>{t("createdAt")}</div>,
     cell: ({ row }) => (
       <div className="space-y-2 text-sm">
         <div className="flex items-center space-x-4">
@@ -220,14 +234,15 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuLabel>{t("edit")}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={openEditOrder}>Sửa</DropdownMenuItem>
+            <DropdownMenuItem onClick={openEditOrder}>{t("edit")}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
     },
   },
 ];
+};
 
-export default orderTableColumns;
+export default useOrderTableColumns;

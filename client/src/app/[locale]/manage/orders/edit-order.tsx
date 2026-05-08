@@ -125,7 +125,7 @@ export default function EditOrder({
         }
       }}
     >
-      <AlertDialogContent className="sm:max-w-[600px] max-h-screen overflow-auto">
+      <AlertDialogContent className="sm:max-w-[600px] max-h-screen overflow-auto bg-surface-container border-border text-foreground rounded-2xl shadow-2xl">
         <AlertDialogHeader>
           <AlertDialogTitle>Cập nhật đơn hàng</AlertDialogTitle>
         </AlertDialogHeader>

@@ -5,10 +5,10 @@ import {
   formatCurrency,
   formatDateTimeToLocaleString,
   formatDateTimeToTimeString,
-  getVietnameseOrderStatus,
   handleErrorApi,
   OrderStatusIcon,
 } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import { usePayForGuestMutation } from "@/queries/useOrderAdmin";
 import {
   GetOrdersResType,
@@ -28,6 +28,8 @@ export default function OrderGuestDetail({
   orders: Orders;
   onPaySuccess?: (data: PayGuestOrdersResType) => void;
 }) {
+  const t = useTranslations("GuestDetail");
+  const tStatus = useTranslations("OrderStatus");
   const ordersFilterToPurchase = guest
     ? orders.filter(
         (order) =>
@@ -59,27 +61,27 @@ export default function OrderGuestDetail({
       {guest && (
         <Fragment>
           <div className="space-x-1">
-            <span className="font-semibold">Tên:</span>
+            <span className="font-semibold">{t("name")}:</span>
             <span>{guest.name}</span>
             <span className="font-semibold">(#{guest.id})</span>
             <span>|</span>
-            <span className="font-semibold">Bàn:</span>
+            <span className="font-semibold">{t("table")}:</span>
             <span>{guest.tableNumber}</span>
           </div>
           <div className="space-x-1">
-            <span className="font-semibold">Ngày đăng ký:</span>
+            <span className="font-semibold">{t("registrationDate")}:</span>
             <span>{formatDateTimeToLocaleString(guest.createdAt)}</span>
           </div>
         </Fragment>
       )}
 
       <div className="space-y-1">
-        <div className="font-semibold">Đơn hàng:</div>
+        <div className="font-semibold">{t("orders")}:</div>
         {orders.map((order, index) => {
           return (
             <div key={order.id} className="flex gap-2 items-center text-xs">
               <span className="w-[10px]">{index + 1}</span>
-              <span title={getVietnameseOrderStatus(order.status)}>
+              <span title={tStatus(order.status)}>
                 {order.status === OrderStatus.Pending && (
                   <OrderStatusIcon.Pending className="w-4 h-4" />
                 )}
@@ -118,18 +120,18 @@ export default function OrderGuestDetail({
               </span>
               <span
                 className="hidden sm:inline"
-                title={`Tạo: ${formatDateTimeToLocaleString(
+                title={`${t("created")}: ${formatDateTimeToLocaleString(
                   order.createdAt,
-                )} | Cập nhật: ${formatDateTimeToLocaleString(order.updatedAt)}
+                )} | ${t("updated")}: ${formatDateTimeToLocaleString(order.updatedAt)}
           `}
               >
                 {formatDateTimeToLocaleString(order.createdAt)}
               </span>
               <span
                 className="sm:hidden"
-                title={`Tạo: ${formatDateTimeToLocaleString(
+                title={`${t("created")}: ${formatDateTimeToLocaleString(
                   order.createdAt,
-                )} | Cập nhật: ${formatDateTimeToLocaleString(order.updatedAt)}
+                )} | ${t("updated")}: ${formatDateTimeToLocaleString(order.updatedAt)}
           `}
               >
                 {formatDateTimeToTimeString(order.createdAt)}
@@ -140,7 +142,7 @@ export default function OrderGuestDetail({
       </div>
 
       <div className="space-x-1">
-        <span className="font-semibold">Chưa thanh toán:</span>
+        <span className="font-semibold">{t("unpaid")}:</span>
         <Badge>
           <span>
             {formatCurrency(
@@ -152,7 +154,7 @@ export default function OrderGuestDetail({
         </Badge>
       </div>
       <div className="space-x-1">
-        <span className="font-semibold">Đã thanh toán:</span>
+        <span className="font-semibold">{t("paid")}:</span>
         <Badge variant={"outline"}>
           <span>
             {formatCurrency(
@@ -172,7 +174,7 @@ export default function OrderGuestDetail({
           disabled={ordersFilterToPurchase.length === 0}
           onClick={pay}
         >
-          Thanh toán tất cả ({ordersFilterToPurchase.length} đơn)
+          {t("payAll", { count: ordersFilterToPurchase.length })}
         </Button>
       </div>
     </div>

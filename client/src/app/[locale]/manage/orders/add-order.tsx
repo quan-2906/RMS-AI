@@ -34,8 +34,10 @@ import { useDishListQuery } from "@/queries/useDish";
 import { useCreateOrderMutation } from "@/queries/useOrderAdmin";
 import { useCreateGuestMutation } from "@/queries/useAccount";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 export default function AddOrder() {
+  const t = useTranslations("AddOrder");
   const [open, setOpen] = useState(false);
   const [selectedGuest, setSelectedGuest] = useState<
     GetListGuestsResType["data"][0] | null
@@ -91,8 +93,8 @@ export default function AddOrder() {
         guestId = guestRes.payload.data.id;
       }
       if (!guestId) {
-        toast("Chọn khách hàng", {
-          description: "Hãy chọn một khách hàng",
+        toast(t("selectCustomer"), {
+          description: t("selectCustomerDesc"),
         });
         return;
       }
@@ -128,19 +130,19 @@ export default function AddOrder() {
       open={open}
     >
       <AlertDialogTrigger asChild>
-        <Button size="sm" className="h-7 gap-1">
-          <PlusCircle className="h-3.5 w-3.5" />
+        <Button size="sm" className="h-9 gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/90 font-medium">
+          <PlusCircle className="h-4 w-4" />
           <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-            Tạo đơn hàng
+            {t("title")}
           </span>
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="sm:max-w-[600px] max-h-screen overflow-auto">
+      <AlertDialogContent className="sm:max-w-[600px] max-h-screen overflow-auto bg-surface-container border-border text-foreground rounded-2xl shadow-2xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Tạo đơn hàng</AlertDialogTitle>
+          <AlertDialogTitle>{t("title")}</AlertDialogTitle>
         </AlertDialogHeader>
         <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-          <Label htmlFor="isNewGuest">Khách hàng mới</Label>
+          <Label htmlFor="isNewGuest">{t("isNewGuest")}</Label>
           <div className="col-span-3 flex items-center">
             <Switch
               id="isNewGuest"
@@ -163,7 +165,7 @@ export default function AddOrder() {
                   render={({ field }) => (
                     <FormItem>
                       <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                        <Label htmlFor="name">Tên khách hàng</Label>
+                        <Label htmlFor="name">{t("customerName")}</Label>
                         <div className="col-span-3 w-full space-y-2">
                           <Input id="name" className="w-full" {...field} />
                           <FormMessage />
@@ -178,7 +180,7 @@ export default function AddOrder() {
                   render={({ field }) => (
                     <FormItem>
                       <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                        <Label htmlFor="tableNumber">Chọn bàn</Label>
+                        <Label htmlFor="tableNumber">{t("selectTable")}</Label>
                         <div className="col-span-3 w-full space-y-2">
                           <div className="flex items-center gap-4">
                             <div>{field.value}</div>
@@ -206,12 +208,12 @@ export default function AddOrder() {
         )}
         {!isNewGuest && selectedGuest && (
           <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-            <Label htmlFor="selectedGuest">Khách đã chọn</Label>
+            <Label htmlFor="selectedGuest">{t("selectedGuest")}</Label>
             <div className="col-span-3 w-full gap-4 flex items-center">
               <div>
                 {selectedGuest.name} (#{selectedGuest.id})
               </div>
-              <div>Bàn: {selectedGuest.tableNumber}</div>
+              <div>{t("table")}: {selectedGuest.tableNumber}</div>
             </div>
           </div>
         )}
@@ -227,7 +229,7 @@ export default function AddOrder() {
               <div className="flex-shrink-0 relative">
                 {dish.status === DishStatus.Unavailable && (
                   <span className="absolute inset-0 flex items-center justify-center text-sm">
-                    Hết hàng
+                    {t("outOfStock")}
                   </span>
                 )}
                 {dish.image && (
@@ -265,7 +267,7 @@ export default function AddOrder() {
             onClick={handleOrder}
             disabled={orders.length === 0}
           >
-            <span>Đặt hàng · {orders.length} món</span>
+            <span>{t("placeOrder")} · {orders.length} {t("items")}</span>
             <span>{formatCurrency(totalPrice)}</span>
           </Button>
         </AlertDialogFooter>

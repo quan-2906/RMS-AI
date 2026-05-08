@@ -1,6 +1,7 @@
 import { Fragment, useState } from "react";
 import { Users } from "lucide-react";
-import { OrderStatusIcon, cn, getVietnameseOrderStatus } from "@/lib/utils";
+import { OrderStatusIcon, cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import {
   Tooltip,
   TooltipContent,
@@ -61,6 +62,8 @@ export default function OrderStatics({
   tableList: TableListResType["data"];
   servingGuestByTableNumber: ServingGuestByTableNumber;
 }) {
+  const t = useTranslations("ManageOrders");
+  const tStatus = useTranslations("OrderStatus");
   const [selectedTableNumber, setSelectedTableNumber] = useState<number>(0);
   const selectedServingGuest = servingGuestByTableNumber[selectedTableNumber];
   return (
@@ -77,7 +80,7 @@ export default function OrderStatics({
           {selectedServingGuest && (
             <DialogHeader>
               <DialogTitle>
-                Khách đang ngồi tại bàn {selectedTableNumber}
+                {t("guestSittingAtTable")} {selectedTableNumber}
               </DialogTitle>
             </DialogHeader>
           )}
@@ -146,11 +149,10 @@ export default function OrderStatics({
             <div
               key={tableNumber}
               className={cn(
-                "text-sm flex items-stretch gap-2 border p-2 rounded-md",
-                {
-                  "bg-secondary": !isEmptyTable,
-                  "border-transparent": !isEmptyTable,
-                },
+                "text-sm flex items-stretch gap-3 p-3 rounded-xl transition-all cursor-pointer min-w-[120px]",
+                isEmptyTable
+                  ? "glass-card hover:bg-white/5 border-border"
+                  : "bg-secondary text-secondary-foreground shadow-[0_0_15px_rgba(233,195,73,0.3)] hover:opacity-90 border-transparent",
               )}
               onClick={() => {
                 if (!isEmptyTable) setSelectedTableNumber(tableNumber);
@@ -169,20 +171,21 @@ export default function OrderStatics({
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
-                      Đang phục vụ: {servingGuestCount} khách
+                      {t("serving")}: {servingGuestCount} {t("guests")}
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
               <Separator
                 orientation="vertical"
-                className={cn("flex-shrink-0 flex-grow h-auto", {
-                  "bg-muted-foreground": !isEmptyTable,
+                className={cn("flex-shrink-0 flex-grow h-auto mx-1", {
+                  "bg-secondary-foreground/20": !isEmptyTable,
+                  "bg-white/10": isEmptyTable,
                 })}
               />
               {isEmptyTable && (
                 <div className="flex justify-between items-center text-sm">
-                  Ready
+                  {t("ready")}
                 </div>
               )}
               {!isEmptyTable && (
@@ -196,8 +199,8 @@ export default function OrderStatics({
                         </div>
                       </TooltipTrigger>
                       <TooltipContent>
-                        {getVietnameseOrderStatus(OrderStatus.Pending)}:{" "}
-                        {countObject[OrderStatus.Pending] ?? 0} đơn
+                        {tStatus(OrderStatus.Pending)}:{" "}
+                        {countObject[OrderStatus.Pending] ?? 0} {t("items")}
                       </TooltipContent>
                     </Tooltip>
 
@@ -211,8 +214,8 @@ export default function OrderStatics({
                         </div>
                       </TooltipTrigger>
                       <TooltipContent>
-                        {getVietnameseOrderStatus(OrderStatus.Processing)}:{" "}
-                        {countObject[OrderStatus.Processing] ?? 0} đơn
+                        {tStatus(OrderStatus.Processing)}:{" "}
+                        {countObject[OrderStatus.Processing] ?? 0} {t("items")}
                       </TooltipContent>
                     </Tooltip>
                     <Tooltip>
@@ -223,8 +226,8 @@ export default function OrderStatics({
                         </div>
                       </TooltipTrigger>
                       <TooltipContent>
-                        {getVietnameseOrderStatus(OrderStatus.Delivered)}:{" "}
-                        {countObject[OrderStatus.Delivered] ?? 0} đơn
+                        {tStatus(OrderStatus.Delivered)}:{" "}
+                        {countObject[OrderStatus.Delivered] ?? 0} {t("items")}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -234,10 +237,14 @@ export default function OrderStatics({
           );
         })}
       </div>
-      <div className="flex justify-start items-end gap-4 flex-wrap py-4">
+      <div className="flex justify-start items-center gap-3 flex-wrap pt-6 pb-2">
         {OrderStatusValues.map((status) => (
-          <Badge variant="secondary" key={status}>
-            {getVietnameseOrderStatus(status)}: {statics.status[status] ?? 0}
+          <Badge 
+            variant="outline" 
+            key={status}
+            className="bg-surface-container border-secondary/30 text-secondary hover:bg-secondary/10 px-3 py-1 font-body text-[11px] uppercase tracking-wider"
+          >
+            {tStatus(status)}: {statics.status[status] ?? 0}
           </Badge>
         ))}
       </div>

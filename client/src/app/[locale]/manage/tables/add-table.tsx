@@ -37,8 +37,12 @@ import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { useForm, Resolver } from "react-hook-form";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 export default function AddTable() {
+  const t = useTranslations("AddTable");
+  const tManage = useTranslations("ManageTables");
+  const tStatus = useTranslations("TableStatus");
   const [open, setOpen] = useState(false);
   const addTableMutation = useAddTableMutation();
   const form = useForm<CreateTableBodyType>({
@@ -59,7 +63,7 @@ export default function AddTable() {
 
     try {
       const result = await addTableMutation.mutateAsync(values);
-      toast("Thành công", {
+      toast(tManage("success"), {
         description: result.payload.message,
       });
       reset();
@@ -75,19 +79,19 @@ export default function AddTable() {
   return (
     <AlertDialog onOpenChange={setOpen} open={open}>
       <AlertDialogTrigger asChild>
-        <Button size="sm" className="h-7 gap-1">
-          <PlusCircle className="h-3.5 w-3.5" />
+        <Button size="sm" className="h-9 gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/90 font-medium">
+          <PlusCircle className="h-4 w-4" />
           <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-            Thêm bàn
+            {t("buttonAdd")}
           </span>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent
-        className="sm:max-w-[600px] max-h-screen overflow-auto"
+        className="sm:max-w-[600px] max-h-screen overflow-auto bg-surface-container border-border text-foreground rounded-2xl shadow-2xl"
         onCloseAutoFocus={() => form.reset()}
       >
         <AlertDialogHeader>
-          <AlertDialogTitle>Thêm bàn</AlertDialogTitle>
+          <AlertDialogTitle>{t("title")}</AlertDialogTitle>
         </AlertDialogHeader>
         <Form {...form}>
           <form
@@ -106,7 +110,7 @@ export default function AddTable() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="name">Số bàn</Label>
+                      <Label htmlFor="name">{t("number")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input
                           id="number"
@@ -126,7 +130,7 @@ export default function AddTable() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="price">Lượng khách cho phép</Label>
+                      <Label htmlFor="price">{t("capacity")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input
                           id="capacity"
@@ -146,7 +150,7 @@ export default function AddTable() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="description">Trạng thái</Label>
+                      <Label htmlFor="description">{t("status")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Select
                           onValueChange={field.onChange}
@@ -154,13 +158,13 @@ export default function AddTable() {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Chọn trạng thái" />
+                              <SelectValue placeholder={t("selectStatus")} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             {TableStatusValues.map((status) => (
                               <SelectItem key={status} value={status}>
-                                {getVietnameseTableStatus(status)}
+                                {tStatus(status)}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -177,7 +181,7 @@ export default function AddTable() {
         </Form>
         <AlertDialogFooter>
           <Button type="submit" form="add-table-form">
-            Thêm
+            {t("submit")}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

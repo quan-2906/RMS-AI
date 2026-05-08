@@ -32,7 +32,7 @@ import { useSearchParams } from "next/navigation";
 import { getVietnameseOrderStatus, handleErrorApi } from "@/lib/utils";
 import { OrderStatusValues } from "@/constants/type";
 import OrderStatics from "@/app/[locale]/manage/orders/order-statics";
-import orderTableColumns from "@/app/[locale]/manage/orders/order-table-columns";
+import useOrderTableColumns from "@/app/[locale]/manage/orders/order-table-columns";
 import { useOrderService } from "@/app/[locale]/manage/orders/order.service";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -58,6 +58,7 @@ import { useTableListQuery } from "@/queries/useTable";
 import { toast } from "sonner";
 import { GuestCreateOrdersResType } from "@/schemaValidations/guest.schema";
 import { useAppStore } from "@/components/ui/app-provider";
+import { useTranslations } from "next-intl";
 
 export const OrderTableContext = createContext({
   setOrderIdEdit: (value: number | undefined) => {},
@@ -86,6 +87,8 @@ const PAGE_SIZE = 10;
 const initFromDate = startOfDay(new Date());
 const initToDate = endOfDay(new Date());
 export default function OrderTable() {
+  const t = useTranslations("ManageOrders");
+  const tStatus = useTranslations("OrderStatus");
   const socket = useAppStore((state) => state.socket);
   const searchParam = useSearchParams();
   const [openStatusFilter, setOpenStatusFilter] = useState(false);
@@ -94,6 +97,23 @@ export default function OrderTable() {
   const page = searchParam.get("page") ? Number(searchParam.get("page")) : 1;
   const pageIndex = page - 1;
   const [orderIdEdit, setOrderIdEdit] = useState<number | undefined>();
+  const updateOrderMutation = useUpdateOrderMutation();
+
+  const changeStatus = async (body: {
+    orderId: number;
+    dishId: number;
+    status: (typeof OrderStatusValues)[number];
+    quantity: number;
+  }) => {
+    try {
+      await updateOrderMutation.mutateAsync(body);
+    } catch (error) {
+      handleErrorApi({
+        error,
+      });
+    }
+  };
+
   const getOrderListQuery = useGetOrderListQuery({
     fromDate,
     toDate,
@@ -111,28 +131,14 @@ export default function OrderTable() {
     pageIndex, // Gía trị mặc định ban đầu, không có ý nghĩa khi data được fetch bất đồng bộ
     pageSize: PAGE_SIZE, //default page size
   });
-  const updateOrderMutation = useUpdateOrderMutation();
   const { statics, orderObjectByGuestId, servingGuestByTableNumber } =
     useOrderService(orderList);
 
-  const changeStatus = async (body: {
-    orderId: number;
-    dishId: number;
-    status: (typeof OrderStatusValues)[number];
-    quantity: number;
-  }) => {
-    try {
-      await updateOrderMutation.mutateAsync(body);
-    } catch (error) {
-      handleErrorApi({
-        error,
-      });
-    }
-  };
+  const columns = useOrderTableColumns(setOrderIdEdit, orderObjectByGuestId, changeStatus);
 
   const table = useReactTable({
     data: orderList,
-    columns: orderTableColumns,
+    columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -190,24 +196,36 @@ export default function OrderTable() {
         dishSnapshot: { name },
         quantity,
       } = data;
-      toast("Cập nhật đơn hàng", {
-        description: `Món ${name} (SL: ${quantity}) vừa được cập nhật sang trang thái ${getVietnameseOrderStatus(data.status)}`,
+      toast(t("notifications.updateTitle"), {
+        description: t("notifications.updateDesc", {
+          name,
+          quantity,
+          status: tStatus(data.status),
+        }),
       });
       refetch();
     }
 
     function onNewOrder(data: GuestCreateOrdersResType["data"]) {
       const { guest } = data[0];
-      toast("Cập nhật đơn hàng", {
-        description: `${guest?.name} tại bàn ${guest?.tableNumber} vừa đặt ${data.length} đơn`,
+      toast(t("notifications.newOrderTitle"), {
+        description: t("notifications.newOrderDesc", {
+          name: guest?.name,
+          table: guest?.tableNumber,
+          count: data.length,
+        }),
       });
       refetchOrderList();
     }
 
     function onPayment(data: PayGuestOrdersResType["data"]) {
       const { guest } = data[0];
-      toast("Thanh toán đơn hàng", {
-        description: `${guest?.name} tại bàn ${guest?.tableNumber} thanh toán thành công ${data.length} đơn`,
+      toast(t("notifications.paymentTitle"), {
+        description: t("notifications.paymentDesc", {
+          name: guest?.name,
+          table: guest?.tableNumber,
+          count: data.length,
+        }),
       });
       refetch();
     }
@@ -235,126 +253,130 @@ export default function OrderTable() {
         orderObjectByGuestId,
       }}
     >
-      <div className="w-full">
+      <div className="w-full space-y-6">
         <EditOrder
           id={orderIdEdit}
           setId={setOrderIdEdit}
           onSubmitSuccess={() => {}}
         />
-        <div className=" flex items-center">
-          <div className="flex flex-wrap gap-2">
-            <div className="flex items-center">
-              <span className="mr-2">Từ</span>
+        <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-4 glass-card p-4 rounded-2xl w-full">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-start sm:items-center w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
+              <span className="text-sm font-body text-muted-foreground font-medium uppercase tracking-wider mb-1 sm:mb-0">{t("from")}</span>
               <Input
                 type="datetime-local"
-                placeholder="Từ ngày"
-                className="text-sm"
+                placeholder={t("from")}
+                className="text-sm bg-surface-container-high border-border text-foreground rounded-lg focus-visible:ring-secondary w-full sm:w-[190px]"
                 value={format(fromDate, "yyyy-MM-dd HH:mm").replace(" ", "T")}
                 onChange={(event) => setFromDate(new Date(event.target.value))}
               />
             </div>
-            <div className="flex items-center">
-              <span className="mr-2">Đến</span>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
+              <span className="text-sm font-body text-muted-foreground font-medium uppercase tracking-wider mb-1 sm:mb-0">{t("to")}</span>
               <Input
                 type="datetime-local"
-                placeholder="Đến ngày"
+                placeholder={t("to")}
+                className="text-sm bg-surface-container-high border-border text-foreground rounded-lg focus-visible:ring-secondary w-full sm:w-[190px]"
                 value={format(toDate, "yyyy-MM-dd HH:mm").replace(" ", "T")}
                 onChange={(event) => setToDate(new Date(event.target.value))}
               />
             </div>
-            <Button className="" variant={"outline"} onClick={resetDateFilter}>
-              Reset
+            <Button variant="outline" onClick={resetDateFilter} className="border-secondary/30 text-secondary hover:bg-secondary/10 hover:text-secondary rounded-lg px-6 font-body tracking-wider uppercase text-xs w-full sm:w-auto mt-2 sm:mt-0">
+              {t("reset")}
             </Button>
           </div>
-          <div className="ml-auto">
+          <div className="w-full sm:w-auto">
             <AddOrder />
           </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-4 py-4">
-          <Input
-            placeholder="Tên khách"
-            value={
-              (table.getColumn("guestName")?.getFilterValue() as string) ?? ""
-            }
-            onChange={(event) =>
-              table.getColumn("guestName")?.setFilterValue(event.target.value)
-            }
-            className="max-w-[100px]"
-          />
-          <Input
-            placeholder="Số bàn"
-            value={
-              (table.getColumn("tableNumber")?.getFilterValue() as string) ?? ""
-            }
-            onChange={(event) =>
-              table.getColumn("tableNumber")?.setFilterValue(event.target.value)
-            }
-            className="max-w-[80px]"
-          />
-          <Popover open={openStatusFilter} onOpenChange={setOpenStatusFilter}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                role="combobox"
-                aria-expanded={openStatusFilter}
-                className="w-[150px] text-sm justify-between"
-              >
-                {table.getColumn("status")?.getFilterValue()
-                  ? getVietnameseOrderStatus(
-                      table
-                        .getColumn("status")
-                        ?.getFilterValue() as (typeof OrderStatusValues)[number],
-                    )
-                  : "Trạng thái"}
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
-              <Command>
-                <CommandGroup>
-                  <CommandList>
-                    {OrderStatusValues.map((status) => (
-                      <CommandItem
-                        key={status}
-                        value={status}
-                        onSelect={(currentValue) => {
-                          table
-                            .getColumn("status")
-                            ?.setFilterValue(
-                              currentValue ===
-                                table.getColumn("status")?.getFilterValue()
-                                ? ""
-                                : currentValue,
-                            );
-                          setOpenStatusFilter(false);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            table.getColumn("status")?.getFilterValue() ===
-                              status
-                              ? "opacity-100"
-                              : "opacity-0",
-                          )}
-                        />
-                        {getVietnameseOrderStatus(status)}
-                      </CommandItem>
-                    ))}
-                  </CommandList>
-                </CommandGroup>
-              </Command>
-            </PopoverContent>
-          </Popover>
         </div>
         <OrderStatics
           statics={statics}
           tableList={tableListSortedByNumber}
           servingGuestByTableNumber={servingGuestByTableNumber}
         />
-        {/* <TableSkeleton /> */}
-        <div className="rounded-md border">
-          <Table>
+        
+        <div className="glass-card rounded-2xl p-5 glow-hover transition-all">
+          <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-4 mb-4">
+            <Input
+              placeholder={t("placeholderGuest")}
+              value={
+                (table.getColumn("guestName")?.getFilterValue() as string) ?? ""
+              }
+              onChange={(event) =>
+                table.getColumn("guestName")?.setFilterValue(event.target.value)
+              }
+              className="w-full sm:max-w-[150px] bg-surface-container-high border-border text-foreground rounded-lg focus-visible:ring-secondary"
+            />
+            <Input
+              placeholder={t("placeholderTable")}
+              value={
+                (table.getColumn("tableNumber")?.getFilterValue() as string) ?? ""
+              }
+              onChange={(event) =>
+                table.getColumn("tableNumber")?.setFilterValue(event.target.value)
+              }
+              className="w-full sm:max-w-[100px] bg-surface-container-high border-border text-foreground rounded-lg focus-visible:ring-secondary"
+            />
+            <Popover open={openStatusFilter} onOpenChange={setOpenStatusFilter}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={openStatusFilter}
+                  className="w-full sm:w-[150px] text-sm justify-between bg-surface-container-high border-border text-foreground hover:bg-white/5 hover:text-foreground rounded-lg focus-visible:ring-secondary"
+                >
+                  {table.getColumn("status")?.getFilterValue()
+                    ? tStatus(
+                        table
+                          .getColumn("status")
+                          ?.getFilterValue() as (typeof OrderStatusValues)[number],
+                      )
+                    : t("status")}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0 bg-surface-container border-border">
+                <Command className="bg-transparent text-foreground">
+                  <CommandGroup>
+                    <CommandList>
+                      {OrderStatusValues.map((status) => (
+                        <CommandItem
+                          key={status}
+                          value={status}
+                          className="hover:bg-white/5 aria-selected:bg-white/10"
+                          onSelect={(currentValue) => {
+                            table
+                              .getColumn("status")
+                              ?.setFilterValue(
+                                currentValue ===
+                                  table.getColumn("status")?.getFilterValue()
+                                  ? ""
+                                  : currentValue,
+                              );
+                            setOpenStatusFilter(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              table.getColumn("status")?.getFilterValue() ===
+                                status
+                                ? "opacity-100 text-secondary"
+                                : "opacity-0",
+                            )}
+                          />
+                          {tStatus(status)}
+                        </CommandItem>
+                      ))}
+                    </CommandList>
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+          {/* <TableSkeleton /> */}
+          <div className="rounded-xl border border-border overflow-hidden bg-background/50">
+            <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -393,28 +415,29 @@ export default function OrderTable() {
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={orderTableColumns.length}
+                    colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {t("noResults")}
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
-        </div>
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="text-xs text-muted-foreground py-4 flex-1 ">
-            Hiển thị{" "}
-            <strong>{table.getPaginationRowModel().rows.length}</strong> trong{" "}
-            <strong>{orderList.length}</strong> kết quả
           </div>
-          <div>
-            <AutoPagination
-              page={table.getState().pagination.pageIndex + 1}
-              pageSize={table.getPageCount()}
-              pathname="/manage/orders"
-            />
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 mt-2">
+          <div className="text-xs text-muted-foreground font-body py-2 sm:py-0">
+            {t("showing")}{" "}
+            <strong className="text-foreground font-medium">{table.getPaginationRowModel().rows.length}</strong> {t("of")}{" "}
+            <strong className="text-foreground font-medium">{orderList.length}</strong> {t("results")}
+          </div>
+            <div>
+              <AutoPagination
+                page={table.getState().pagination.pageIndex + 1}
+                pageSize={table.getPageCount()}
+                pathname="/manage/orders"
+              />
+            </div>
           </div>
         </div>
       </div>

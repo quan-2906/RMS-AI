@@ -9,7 +9,7 @@ import {
 const dishApiRequest = {
   list: () =>
     http.get<DishListResType>("dishes", {
-      next: { tags: ["dishes"], revalidate: 60 },
+      cache: "no-store",
     }),
 
   add: (body: CreateDishBodyType) => http.post<DishResType>("dishes", body),

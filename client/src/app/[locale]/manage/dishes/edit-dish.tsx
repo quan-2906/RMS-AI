@@ -41,6 +41,7 @@ import { useUploadMediaMutation } from "@/queries/useMedia";
 import { toast } from "sonner";
 import { getVietnameseDishStatus, handleErrorApi } from "@/lib/utils";
 import revalidateApiRequest from "@/apiRequests/revalidate";
+import { useTranslations } from "next-intl";
 
 export default function EditDish({
   id,
@@ -51,6 +52,10 @@ export default function EditDish({
   setId: (value: number | undefined) => void;
   onSubmitSuccess?: () => void;
 }) {
+  const t = useTranslations("EditDish");
+  const tAdd = useTranslations("AddDish");
+  const tManage = useTranslations("ManageDishes");
+  const tStatus = useTranslations("DishStatus");
   const [file, setFile] = useState<File | null>(null);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const updateDishMutation = useUpdateDishMutation();
@@ -66,6 +71,7 @@ export default function EditDish({
       description: "",
       price: 0,
       image: undefined,
+      images360: [],
       status: DishStatus.Unavailable,
     },
   });
@@ -81,13 +87,14 @@ export default function EditDish({
 
   useEffect(() => {
     if (data) {
-      const { name, image, description, price, status } = data.payload.data;
+      const { name, image, description, price, status, images360 } = data.payload.data;
       form.reset({
         name,
         image: image ?? undefined,
         description,
         price,
         status,
+        images360: (images360 as string[]) ?? [],
       });
     }
   }, [data, form]);
@@ -118,7 +125,7 @@ export default function EditDish({
       }
       const result = await updateDishMutation.mutateAsync(body);
       await revalidateApiRequest("dishes");
-      toast("Thành Công", {
+      toast(tManage("success"), {
         description: result.payload.message,
       });
       reset();
@@ -139,11 +146,11 @@ export default function EditDish({
         }
       }}
     >
-      <AlertDialogContent className="sm:max-w-[600px] max-h-screen overflow-auto">
+      <AlertDialogContent className="sm:max-w-[600px] max-h-screen overflow-auto bg-surface-container border-border text-foreground rounded-2xl shadow-2xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Cập nhật món ăn</AlertDialogTitle>
+          <AlertDialogTitle>{t("title")}</AlertDialogTitle>
           <AlertDialogDescription>
-            Các trường sau đây là bắt buộc: Tên, ảnh
+            {t("requiredFields")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <Form {...form}>
@@ -163,7 +170,7 @@ export default function EditDish({
                       <Avatar className="aspect-square w-[100px] h-[100px] rounded-md object-cover">
                         <AvatarImage src={previewAvatarFromFile} />
                         <AvatarFallback className="rounded-none">
-                          {name || "Avatar"}
+                          {name || tAdd("imageLabel")}
                         </AvatarFallback>
                       </Avatar>
                       <input
@@ -187,7 +194,7 @@ export default function EditDish({
                         onClick={() => imageInputRef.current?.click()}
                       >
                         <Upload className="h-4 w-4 text-muted-foreground" />
-                        <span className="sr-only">Upload</span>
+                        <span className="sr-only">{tAdd("upload")}</span>
                       </button>
                     </div>
                   </FormItem>
@@ -200,7 +207,7 @@ export default function EditDish({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="name">Tên món ăn</Label>
+                      <Label htmlFor="name">{tAdd("name")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input id="name" className="w-full" {...field} />
                         <FormMessage />
@@ -215,7 +222,7 @@ export default function EditDish({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="price">Giá</Label>
+                      <Label htmlFor="price">{tAdd("price")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input
                           id="price"
@@ -235,7 +242,7 @@ export default function EditDish({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="description">Mô tả sản phẩm</Label>
+                      <Label htmlFor="description">{tAdd("description")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Textarea
                           id="description"
@@ -254,7 +261,7 @@ export default function EditDish({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="description">Trạng thái</Label>
+                      <Label htmlFor="description">{tAdd("status")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Select
                           onValueChange={field.onChange}
@@ -263,13 +270,13 @@ export default function EditDish({
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Chọn trạng thái" />
+                              <SelectValue placeholder={tAdd("selectStatus")} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             {DishStatusValues.map((status) => (
                               <SelectItem key={status} value={status}>
-                                {getVietnameseDishStatus(status)}
+                                {tStatus(status)}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -281,12 +288,63 @@ export default function EditDish({
                   </FormItem>
                 )}
               />
+
+              <div className="grid grid-cols-4 items-start justify-items-start gap-4">
+                <Label className="mt-2">Ảnh 360°</Label>
+                <div className="col-span-3 w-full space-y-4">
+                  <div className="flex flex-wrap gap-2">
+                    {form.watch("images360")?.map((url, idx) => (
+                      <div key={idx} className="relative w-16 h-16 rounded-md overflow-hidden border">
+                        <img src={url} alt={`360-${idx}`} className="w-full h-full object-cover" />
+                        <button 
+                          type="button"
+                          className="absolute top-0 right-0 bg-red-500 text-white w-4 h-4 flex items-center justify-center text-[10px]"
+                          onClick={() => {
+                            const current = form.getValues("images360") || [];
+                            form.setValue("images360", current.filter((_, i) => i !== idx));
+                          }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      className="flex aspect-square w-16 items-center justify-center rounded-md border border-dashed hover:bg-secondary/10 transition-colors"
+                      onClick={() => {
+                        const input = document.createElement("input");
+                        input.type = "file";
+                        input.multiple = true;
+                        input.accept = "image/*";
+                        input.onchange = async (e) => {
+                          const files = (e.target as HTMLInputElement).files;
+                          if (files) {
+                            const newUrls: string[] = [];
+                            for (let i = 0; i < files.length; i++) {
+                              const formData = new FormData();
+                              formData.append("file", files[i]);
+                              const res = await uploadMediaMutation.mutateAsync(formData);
+                              newUrls.push(res.payload.data);
+                            }
+                            const current = form.getValues("images360") || [];
+                            form.setValue("images360", [...current, ...newUrls]);
+                          }
+                        };
+                        input.click();
+                      }}
+                    >
+                      <Upload className="h-4 w-4 text-muted-foreground" />
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">Tải lên ít nhất 12 ảnh để có trải nghiệm 360 tốt nhất.</p>
+                </div>
+              </div>
             </div>
           </form>
         </Form>
         <AlertDialogFooter>
           <Button type="submit" form="edit-dish-form">
-            Lưu
+            {t("submit")}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

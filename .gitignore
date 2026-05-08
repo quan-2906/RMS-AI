@@ -5,3 +5,4 @@ template/node_modules/
 .env
 server/.env
 client/.env
+mcp_config.json

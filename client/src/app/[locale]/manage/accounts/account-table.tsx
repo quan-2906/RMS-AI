@@ -59,6 +59,7 @@ import {
 } from "@/queries/useAccount";
 import { toast } from "sonner";
 import { handleErrorApi } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 type AccountItem = AccountListResType["data"][0];
 
@@ -74,85 +75,87 @@ const AccountTableContext = createContext<{
   setEmployeeDelete: (value: AccountItem | null) => {},
 });
 
-export const columns: ColumnDef<AccountType>[] = [
-  // {
-  //   id: "stt",
-  //   header: "STT",
-  //   cell: ({ row }) => {
-  //     return <>{row.index + 1}</>;
-  //   },
-  // },
-  {
-    accessorKey: "id",
-    header: "ID",
-  },
-  {
-    accessorKey: "avatar",
-    header: "Avatar",
-    cell: ({ row }) => (
-      <div>
-        <Avatar className="aspect-square w-[100px] h-[100px] rounded-md object-cover">
-          <AvatarImage src={row.getValue("avatar")} />
-          <AvatarFallback className="rounded-none">
-            {row.original.name}
-          </AvatarFallback>
-        </Avatar>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "name",
-    header: "Tên",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Email
-          <CaretSortIcon className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: function Actions({ row }) {
-      const { setEmployeeIdEdit, setEmployeeDelete } =
-        useContext(AccountTableContext);
-      const openEditEmployee = () => {
-        setEmployeeIdEdit(row.original.id);
-      };
+const useAccountColumns = (
+  setEmployeeIdEdit: (value: number) => void,
+  setEmployeeDelete: (value: AccountItem | null) => void,
+): ColumnDef<AccountType>[] => {
+  const t = useTranslations("ManageAccounts");
 
-      const openDeleteEmployee = () => {
-        setEmployeeDelete(row.original);
-      };
-      return (
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <DotsHorizontalIcon className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={openEditEmployee}>Sửa</DropdownMenuItem>
-            <DropdownMenuItem onClick={openDeleteEmployee}>
-              Xóa
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+  return [
+    {
+      accessorKey: "id",
+      header: t("id"),
     },
-  },
-];
+    {
+      accessorKey: "avatar",
+      header: t("avatar"),
+      cell: ({ row }) => (
+        <div>
+          <Avatar className="aspect-square w-[100px] h-[100px] rounded-md object-cover">
+            <AvatarImage src={row.getValue("avatar")} />
+            <AvatarFallback className="rounded-none">
+              {row.original.name}
+            </AvatarFallback>
+          </Avatar>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "name",
+      header: t("name"),
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("name")}</div>
+      ),
+    },
+    {
+      accessorKey: "email",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            {t("email")}
+            <CaretSortIcon className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: function Actions({ row }) {
+        const openEditEmployee = () => {
+          setEmployeeIdEdit(row.original.id);
+        };
+
+        const openDeleteEmployee = () => {
+          setEmployeeDelete(row.original);
+        };
+        return (
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <DotsHorizontalIcon className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>{t("actions")}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={openEditEmployee}>
+                {t("edit")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={openDeleteEmployee}>
+                {t("delete")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
+};
 
 function AlertDialogDeleteAccount({
   employeeDelete,
@@ -162,6 +165,7 @@ function AlertDialogDeleteAccount({
   setEmployeeDelete: (value: AccountItem | null) => void;
 }) {
   const { mutateAsync } = useDeleteAccountMutation();
+  const t = useTranslations("DeleteEmployee");
   const deleteAccount = async () => {
     if (employeeDelete) {
       try {
@@ -187,19 +191,15 @@ function AlertDialogDeleteAccount({
     >
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Xóa nhân viên?</AlertDialogTitle>
+          <AlertDialogTitle>{t("title")}</AlertDialogTitle>
           <AlertDialogDescription>
-            Tài khoản{" "}
-            <span className="bg-foreground text-primary-foreground rounded px-1">
-              {employeeDelete?.name}
-            </span>{" "}
-            sẽ bị xóa vĩnh viễn
+            {t("description", { name: employeeDelete?.name })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
           <AlertDialogAction onClick={deleteAccount}>
-            Continue
+            {t("continue")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -209,6 +209,7 @@ function AlertDialogDeleteAccount({
 
 const PAGE_SIZE = 10;
 export default function AccountTable() {
+  const t = useTranslations("ManageAccounts");
   const searchParam = useSearchParams();
   const page = searchParam.get("page") ? Number(searchParam.get("page")) : 1;
   const pageIndex = page - 1;
@@ -216,6 +217,7 @@ export default function AccountTable() {
   const [employeeDelete, setEmployeeDelete] = useState<AccountItem | null>(
     null,
   );
+  const columns = useAccountColumns(setEmployeeIdEdit, setEmployeeDelete);
 
   const accountListQuery = useGetAccountList();
   const data = accountListQuery.data?.payload.data ?? [];
@@ -266,7 +268,7 @@ export default function AccountTable() {
         setEmployeeDelete,
       }}
     >
-      <div className="w-full">
+      <div className="w-full space-y-6">
         <EditEmployee
           id={employeeIdEdit}
           setId={setEmployeeIdEdit}
@@ -276,20 +278,20 @@ export default function AccountTable() {
           employeeDelete={employeeDelete}
           setEmployeeDelete={setEmployeeDelete}
         />
-        <div className="flex items-center py-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-4 glass-card p-4 sm:p-5 rounded-2xl">
           <Input
-            placeholder="Filter emails..."
+            placeholder={t("filterPlaceholder")}
             value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
               table.getColumn("email")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="w-full sm:max-w-sm bg-background border-border text-foreground rounded-lg focus-visible:ring-secondary"
           />
-          <div className="ml-auto flex items-center gap-2">
+          <div className="w-full sm:w-auto flex items-center gap-2">
             <AddEmployee />
           </div>
         </div>
-        <div className="rounded-md border">
+        <div className="rounded-xl border border-border overflow-hidden bg-background/50 glass-card">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -332,18 +334,18 @@ export default function AccountTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {t("noResults")}
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
         </div>
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="text-xs text-muted-foreground py-4 flex-1 ">
-            Hiển thị{" "}
-            <strong>{table.getPaginationRowModel().rows.length}</strong> trong{" "}
-            <strong>{data.length}</strong> kết quả
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 mt-2">
+          <div className="text-xs text-muted-foreground font-body py-2 sm:py-0">
+            {t("showing")}{" "}
+            <strong className="text-foreground font-medium">{table.getPaginationRowModel().rows.length}</strong> {t("in")}{" "}
+            <strong className="text-foreground font-medium">{data.length}</strong> {t("results")}
           </div>
           <div>
             <AutoPagination

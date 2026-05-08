@@ -26,8 +26,10 @@ import { PlusCircle, Upload } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 export default function AddEmployee() {
+  const t = useTranslations("AddEmployee");
   const [file, setFile] = useState<File | null>(null);
   const [open, setOpen] = useState(false);
   const addAccountMutation = useAddAccountMutation();
@@ -74,7 +76,7 @@ export default function AddEmployee() {
         };
       }
       const result = await addAccountMutation.mutateAsync(body);
-      toast("Thành công", {
+      toast(t("success"), {
         description: result.payload.message,
       });
       reset();
@@ -90,18 +92,18 @@ export default function AddEmployee() {
   return (
     <AlertDialog onOpenChange={setOpen} open={open}>
       <AlertDialogTrigger asChild>
-        <Button size="sm" className="h-7 gap-1">
-          <PlusCircle className="h-3.5 w-3.5" />
+        <Button size="sm" className="h-9 gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/90 font-medium">
+          <PlusCircle className="h-4 w-4" />
           <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-            Tạo tài khoản
+            {t("buttonAdd")}
           </span>
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="sm:max-w-[600px] max-h-screen overflow-auto">
+      <AlertDialogContent className="sm:max-w-[600px] max-h-screen overflow-auto bg-surface-container border-border text-foreground rounded-2xl shadow-2xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Tạo tài khoản</AlertDialogTitle>
+          <AlertDialogTitle>{t("title")}</AlertDialogTitle>
           <AlertDialogDescription>
-            Các trường tên, email, mật khẩu là bắt buộc
+            {t("requiredFields")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <Form {...form}>
@@ -124,7 +126,7 @@ export default function AddEmployee() {
                       <Avatar className="aspect-square w-[100px] h-[100px] rounded-md object-cover">
                         <AvatarImage src={previewAvatarFromFile} />
                         <AvatarFallback className="rounded-none">
-                          {name || "Avatar"}
+                          {name || t("avatarLabel")}
                         </AvatarFallback>
                       </Avatar>
                       <input
@@ -148,7 +150,7 @@ export default function AddEmployee() {
                         onClick={() => avatarInputRef.current?.click()}
                       >
                         <Upload className="h-4 w-4 text-muted-foreground" />
-                        <span className="sr-only">Upload</span>
+                        <span className="sr-only">{t("upload")}</span>
                       </button>
                     </div>
                   </FormItem>
@@ -161,7 +163,7 @@ export default function AddEmployee() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="name">Tên</Label>
+                      <Label htmlFor="name">{t("name")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input id="name" className="w-full" {...field} />
                         <FormMessage />
@@ -176,7 +178,7 @@ export default function AddEmployee() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="email">{t("email")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input id="email" className="w-full" {...field} />
                         <FormMessage />
@@ -191,7 +193,7 @@ export default function AddEmployee() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="password">Mật khẩu</Label>
+                      <Label htmlFor="password">{t("password")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input
                           id="password"
@@ -211,7 +213,7 @@ export default function AddEmployee() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
+                      <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input
                           id="confirmPassword"
@@ -230,7 +232,7 @@ export default function AddEmployee() {
         </Form>
         <AlertDialogFooter>
           <Button type="submit" form="add-employee-form">
-            Thêm
+            {t("submit")}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

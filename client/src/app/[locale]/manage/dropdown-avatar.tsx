@@ -16,8 +16,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAppStore } from "@/components/ui/app-provider";
+import { useTranslations } from "next-intl";
 
 export default function DropdownAvatar() {
+  const t = useTranslations("ManageNav");
   const logoutMutation = useLogoutMutation();
   const router = useRouter();
   const { data } = useAccountMe();
@@ -61,12 +63,12 @@ export default function DropdownAvatar() {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href={"/manage/setting"} className="cursor-pointer">
-            Cài đặt
+            {t("settings")}
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>Hỗ trợ</DropdownMenuItem>
+        <DropdownMenuItem>{t("support")}</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={logout}>Đăng xuất</DropdownMenuItem>
+        <DropdownMenuItem onClick={logout}>{t("logout")}</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

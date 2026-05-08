@@ -43,6 +43,7 @@ import { useEffect } from "react";
 import { useGetTableQuery, useUpdateTableMutation } from "@/queries/useTable";
 import { toast } from "sonner";
 import QRCodeTable from "@/components/ui/qrcode-table";
+import { useTranslations } from "next-intl";
 
 export default function EditTable({
   id,
@@ -53,6 +54,10 @@ export default function EditTable({
   setId: (value: number | undefined) => void;
   onSubmitSuccess?: () => void;
 }) {
+  const t = useTranslations("EditTable");
+  const tAdd = useTranslations("AddTable");
+  const tManage = useTranslations("ManageTables");
+  const tStatus = useTranslations("TableStatus");
   const updateTableMutation = useUpdateTableMutation();
   const form = useForm<UpdateTableBodyType>({
     resolver: zodResolver(UpdateTableBody) as any,
@@ -86,7 +91,7 @@ export default function EditTable({
       };
 
       const result = await updateTableMutation.mutateAsync(body);
-      toast("Thành Công", {
+      toast(tManage("success"), {
         description: result.payload.message,
       });
       reset();
@@ -111,17 +116,17 @@ export default function EditTable({
           setId(undefined);
         }
       }}
-    >
-      <AlertDialogContent
-        className="sm:max-w-[600px] max-h-screen overflow-auto"
-        onCloseAutoFocus={() => {
-          form.reset();
-          setId(undefined);
-        }}
       >
-        <AlertDialogHeader>
-          <AlertDialogTitle>Cập nhật bàn ăn</AlertDialogTitle>
-        </AlertDialogHeader>
+        <AlertDialogContent
+          className="sm:max-w-[600px] max-h-screen overflow-auto bg-surface-container border-border text-foreground rounded-2xl shadow-2xl"
+          onCloseAutoFocus={() => {
+            form.reset();
+            setId(undefined);
+          }}
+        >
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("title")}</AlertDialogTitle>
+          </AlertDialogHeader>
         <Form {...form}>
           <form
             noValidate
@@ -133,7 +138,7 @@ export default function EditTable({
             <div className="grid gap-4 py-4">
               <FormItem>
                 <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                  <Label htmlFor="name">Số hiệu bàn</Label>
+                  <Label htmlFor="name">{tAdd("number")}</Label>
                   <div className="col-span-3 w-full space-y-2">
                     <Input
                       id="number"
@@ -152,7 +157,7 @@ export default function EditTable({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="price">Sức chứa (người)</Label>
+                      <Label htmlFor="price">{tAdd("capacity")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input
                           id="capacity"
@@ -172,7 +177,7 @@ export default function EditTable({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="description">Trạng thái</Label>
+                      <Label htmlFor="description">{tAdd("status")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Select
                           onValueChange={field.onChange}
@@ -180,13 +185,13 @@ export default function EditTable({
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Chọn trạng thái" />
+                              <SelectValue placeholder={tAdd("selectStatus")} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             {TableStatusValues.map((status) => (
                               <SelectItem key={status} value={status}>
-                                {getVietnameseTableStatus(status)}
+                                {tStatus(status)}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -204,7 +209,7 @@ export default function EditTable({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="price">Đổi QR Code</Label>
+                      <Label htmlFor="price">{t("changeQrCode")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <div className="flex items-center space-x-2">
                           <Switch
@@ -222,7 +227,7 @@ export default function EditTable({
               />
               <FormItem>
                 <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                  <Label>QR Code</Label>
+                  <Label>{tManage("qrCode")}</Label>
                   <div className="col-span-3 w-full space-y-2">
                     {data && (
                       <QRCodeTable
@@ -235,7 +240,7 @@ export default function EditTable({
               </FormItem>
               <FormItem>
                 <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                  <Label>URL gọi món</Label>
+                  <Label>{t("qrUrl")}</Label>
                   <div className="col-span-3 w-full space-y-2">
                     {data && (
                       <Link
@@ -260,7 +265,7 @@ export default function EditTable({
         </Form>
         <AlertDialogFooter>
           <Button type="submit" form="edit-table-form">
-            Lưu
+            {t("submit")}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

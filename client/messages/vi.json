@@ -7,14 +7,33 @@
     "emailNotFound": "Email không tồn tại"
   },
   "Brand": {
-    "title": "Nhà hàng Năm Mùa",
-    "defaultTitle": "Nhà hàng Năm Mùa"
+    "title": "Nhà hàng năm mùa",
+    "defaultTitle": "Nhà hàng năm mùa"
   },
   "HomePage": {
-    "title": "Trang chủ",
-    "description": "Khát khao một trải nghiệm ẩm thực Mỹ cổ điển? Big Boy là lựa chọn hoàn hảo! Thưởng thức chiếc Big Boy burger biểu tượng, thơm ngon và đậm đà, cùng với những ly milkshake béo ngậy và khoai tây chiên giòn tan. Hoàn hảo cho các buổi gặp mặt gia đình và bạn bè!",
-    "slogan": "Vị ngon, trọn khoảnh khắc",
-    "h2": "Đa dạng các món ăn"
+    "title": "Nhà hàng năm mùa",
+    "description": "Kiến tạo tương lai ẩm thực Việt Nam bằng sự giao thoa giữa hương vị truyền thống.",
+    "h2": "Thực đơn nổi bật",
+    "reserveNow": "Đặt bàn ngay",
+    "discoverMenu": "Khám phá thực đơn",
+    "aiSelection": "Lựa chọn tối ưu bởi AI"
+  },
+  "Footer": {
+    "contact": "Liên hệ",
+    "discover": "Khám phá",
+    "privateRoom": "Phòng riêng",
+    "aiPhilosophy": "Triết lý AI",
+    "booking": "Đặt bàn",
+    "giftCard": "Thẻ quà tặng",
+    "address": "1 Nguyễn Văn Linh, TP Đà Nẵng"
+  },
+  "AiChatbot": {
+    "title": "Trợ lý ảo RMS-AI",
+    "welcome": "Xin chào! Tôi là trợ lý ảo RMS-AI. Tôi có thể giúp gì cho bạn?",
+    "paymentSuccess": "Cảm ơn bạn đã thanh toán thành công! Hệ thống đã ghi nhận. Hẹn gặp lại bạn lần sau!",
+    "error": "Rất tiếc, đã có lỗi xảy ra. Hãy thử lại nhé!",
+    "placeholder": "Hỏi trợ lý RMS-AI...",
+    "you": "Bạn"
   },
   "DishDetail": {
     "notFound": "Món ăn không tồn tại"
@@ -31,7 +50,11 @@
     "loginToReview": "Bạn hãy đăng nhập (scan QR) để viết đánh giá",
     "alreadyReviewed": "Bạn đã đánh giá món ăn này",
     "deleteReview": "Xóa đánh giá",
-    "confirmDelete": "Bạn có chắc muốn xóa đánh giá này?"
+    "confirmDelete": "Bạn có chắc muốn xóa đánh giá này?",
+    "button": "Đánh giá",
+    "ratingError": "Vui lòng chọn từ 1 đến 5 sao",
+    "success": "Đánh giá thành công!",
+    "placeholder": "Bạn thấy món ăn này thế nào?"
   },
   "LoginGuest": {
     "title": "Đăng nhập để gọi món",
@@ -42,7 +65,12 @@
     "description": "Khu vực đăng nhập quản lý",
     "cardDescription": "Nhập email và mật khẩu của bạn để đăng nhập vào hệ thống",
     "buttonLogin": "Đăng nhập",
-    "loginWithGoogle": "Đăng nhập với Google"
+    "loginWithGoogle": "Đăng nhập với Google",
+    "placeholderEmail": "Email của bạn",
+    "labelPassword": "Mật khẩu",
+    "forgotPassword": "Quên mật khẩu?",
+    "or": "hoặc",
+    "backToHome": "Trở về Trang chủ"
   },
   "GuestMenu": {
     "title": "Thực đơn",
@@ -105,5 +133,310 @@
     "reviewSuccess": "Đánh giá thành công!",
     "deleteSuccess": "Đã xóa đánh giá",
     "cancel": "Hủy"
+  },
+  "Dashboard": {
+    "title": "Báo cáo doanh thu",
+    "description": "Theo dõi doanh thu, số lượng đơn hàng và đánh giá món ăn",
+    "from": "Từ",
+    "to": "Đến",
+    "reset": "Khôi phục",
+    "totalRevenue": "Tổng doanh thu",
+    "guests": "Khách",
+    "orders": "Đơn hàng",
+    "servingTables": "Bàn đang phục vụ",
+    "ordered": "Gọi món",
+    "paid": "Đã thanh toán",
+    "revenueChart": "Biểu đồ doanh thu",
+    "dishRanking": "Xếp hạng món ăn",
+    "dishRankingDescription": "Các món được gọi nhiều nhất"
+  },
+  "ManageNav": {
+    "dashboard": "Dashboard",
+    "orders": "Đơn hàng",
+    "tables": "Bàn ăn",
+    "dishes": "Món ăn",
+    "accounts": "Nhân viên",
+    "settings": "Cài đặt",
+    "logout": "Đăng xuất",
+    "support": "Hỗ trợ",
+    "toggleMenu": "Bật/Tắt Menu"
+  },
+  "OrderStatus": {
+    "Pending": "Chờ xử lý",
+    "Processing": "Đang nấu",
+    "Rejected": "Từ chối",
+    "Delivered": "Đã phục vụ",
+    "Paid": "Đã thanh toán"
+  },
+  "ManageOrders": {
+    "title": "Đơn hàng",
+    "description": "Quản lý đơn gọi món và tình trạng phục vụ của khách hàng",
+    "createOrder": "Tạo đơn hàng",
+    "from": "Từ",
+    "to": "Đến",
+    "reset": "Khôi phục",
+    "table": "Bàn",
+    "customer": "Khách hàng",
+    "dish": "Món ăn",
+    "status": "Trạng thái",
+    "handler": "Người xử lý",
+    "createdAt": "Tạo/Cập nhật",
+    "placeholderGuest": "Tên khách",
+    "placeholderTable": "Số bàn",
+    "noResults": "Không có kết quả.",
+    "showing": "Hiển thị",
+    "of": "trong",
+    "results": "kết quả",
+    "deleted": "Đã bị xóa",
+    "ready": "Sẵn sàng",
+    "serving": "Đang phục vụ",
+    "guests": "khách",
+    "items": "đơn",
+    "edit": "Sửa",
+    "guestSittingAtTable": "Khách đang ngồi tại bàn",
+    "notifications": {
+      "updateTitle": "Cập nhật đơn hàng",
+      "updateDesc": "Món {name} (SL: {quantity}) vừa được cập nhật sang trạng thái {status}",
+      "newOrderTitle": "Đơn hàng mới",
+      "newOrderDesc": "{name} tại bàn {table} vừa đặt {count} đơn",
+      "paymentTitle": "Thanh toán đơn hàng",
+      "paymentDesc": "{name} tại bàn {table} thanh toán thành công {count} đơn"
+    }
+  },
+  "AddOrder": {
+    "title": "Tạo đơn hàng",
+    "isNewGuest": "Khách hàng mới",
+    "customerName": "Tên khách hàng",
+    "selectTable": "Chọn bàn",
+    "selectedGuest": "Khách đã chọn",
+    "table": "Bàn",
+    "outOfStock": "Hết hàng",
+    "placeOrder": "Đặt hàng",
+    "items": "món",
+    "selectCustomer": "Chọn khách hàng",
+    "selectCustomerDesc": "Hãy chọn một khách hàng"
+  },
+  "GuestDetail": {
+    "name": "Tên",
+    "table": "Bàn",
+    "registrationDate": "Ngày đăng ký",
+    "orders": "Đơn hàng",
+    "unpaid": "Chưa thanh toán",
+    "paid": "Đã thanh toán",
+    "payAll": "Thanh toán tất cả ({count} đơn)",
+    "created": "Tạo",
+    "updated": "Cập nhật"
+  },
+  "ManageTables": {
+    "title": "Bàn ăn",
+    "description": "Quản lý danh sách bàn, sức chứa và mã QR code cho khách",
+    "filterPlaceholder": "Lọc số bàn...",
+    "table": "Số bàn",
+    "capacity": "Sức chứa",
+    "status": "Trạng thái",
+    "qrCode": "QR Code",
+    "showing": "Hiển thị",
+    "in": "trong",
+    "results": "kết quả",
+    "noResults": "Không có kết quả.",
+    "success": "Thành công",
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "actions": "Hành động"
+  },
+  "TableStatus": {
+    "Available": "Sẵn sàng",
+    "Hidden": "Ẩn",
+    "Reserved": "Đã đặt"
+  },
+  "AddTable": {
+    "title": "Thêm bàn",
+    "buttonAdd": "Thêm bàn",
+    "number": "Số bàn",
+    "capacity": "Lượng khách cho phép",
+    "status": "Trạng thái",
+    "selectStatus": "Chọn trạng thái",
+    "submit": "Thêm"
+  },
+  "EditTable": {
+    "title": "Cập nhật bàn ăn",
+    "submit": "Lưu",
+    "changeQrCode": "Đổi QR Code",
+    "qrUrl": "URL gọi món"
+  },
+  "DeleteTable": {
+    "title": "Xóa bàn ăn?",
+    "description": "Bàn {number} sẽ bị xóa vĩnh viễn",
+    "cancel": "Hủy",
+    "continue": "Tiếp tục"
+  },
+  "ManageDishes": {
+    "title": "Quản lý món ăn",
+    "description": "Danh sách các món ăn tinh hoa của nhà hàng",
+    "filterPlaceholder": "Lọc tên...",
+    "id": "ID",
+    "image": "Ảnh",
+    "name": "Tên",
+    "price": "Giá cả",
+    "descriptionLabel": "Mô tả",
+    "status": "Trạng thái",
+    "actions": "Hành động",
+    "showing": "Hiển thị",
+    "in": "trong",
+    "results": "kết quả",
+    "noResults": "Không có kết quả.",
+    "success": "Thành công",
+    "edit": "Sửa",
+    "delete": "Xóa"
+  },
+  "DishStatus": {
+    "Available": "Sẵn sàng",
+    "Hidden": "Ẩn",
+    "Unavailable": "Hết hàng"
+  },
+  "AddDish": {
+    "title": "Thêm món ăn",
+    "buttonAdd": "Thêm món ăn",
+    "name": "Tên món ăn",
+    "price": "Giá",
+    "description": "Mô tả món ăn",
+    "status": "Trạng thái",
+    "selectStatus": "Chọn trạng thái",
+    "submit": "Thêm",
+    "imageLabel": "Ảnh",
+    "chooseImage": "Chọn ảnh",
+    "selectImage": "Vui lòng chọn ảnh",
+    "upload": "Tải lên"
+  },
+  "EditDish": {
+    "title": "Cập nhật món ăn",
+    "submit": "Lưu",
+    "requiredFields": "Các trường sau đây là bắt buộc: Tên, ảnh"
+  },
+  "DeleteDish": {
+    "title": "Xóa món ăn?",
+    "description": "Món {name} sẽ bị xóa vĩnh viễn",
+    "cancel": "Hủy",
+    "continue": "Tiếp tục"
+  },
+  "ManageAccounts": {
+    "title": "Tài khoản nhân viên",
+    "description": "Quản lý tài khoản nhân viên của nhà hàng",
+    "filterPlaceholder": "Lọc email...",
+    "id": "ID",
+    "avatar": "Avatar",
+    "name": "Tên",
+    "email": "Email",
+    "role": "Vai trò",
+    "actions": "Hành động",
+    "showing": "Hiển thị",
+    "in": "trong",
+    "results": "kết quả",
+    "noResults": "Không có kết quả.",
+    "success": "Thành công",
+    "edit": "Sửa",
+    "delete": "Xóa"
+  },
+  "AddEmployee": {
+    "title": "Thêm nhân viên",
+    "buttonAdd": "Thêm nhân viên",
+    "name": "Tên",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "role": "Vai trò",
+    "submit": "Thêm",
+    "avatarLabel": "Avatar",
+    "selectAvatar": "Chọn ảnh",
+    "success": "Thành công",
+    "requiredFields": "Các trường tên, email, mật khẩu là bắt buộc",
+    "upload": "Tải lên",
+    "selectRole": "Chọn vai trò"
+  },
+  "EditEmployee": {
+    "title": "Cập nhật nhân viên",
+    "submit": "Lưu",
+    "changePassword": "Đổi mật khẩu",
+    "success": "Thành công",
+    "newPassword": "Mật khẩu mới",
+    "confirmNewPassword": "Xác nhận mật khẩu mới"
+  },
+  "DeleteEmployee": {
+    "title": "Xóa nhân viên?",
+    "description": "Tài khoản {name} sẽ bị xóa vĩnh viễn",
+    "cancel": "Hủy",
+    "continue": "Tiếp tục"
+  },
+  "Settings": {
+    "title": "Cài đặt",
+    "description": "Quản lý thông tin cá nhân và mật khẩu"
+  },
+  "UpdateProfile": {
+    "title": "Thông tin cá nhân",
+    "name": "Tên",
+    "submit": "Lưu thông tin",
+    "avatarLabel": "Avatar",
+    "selectAvatar": "Chọn ảnh",
+    "success": "Thành công",
+    "cancel": "Hủy"
+  },
+  "ChangePassword": {
+    "title": "Đổi mật khẩu",
+    "oldPassword": "Mật khẩu cũ",
+    "newPassword": "Mật khẩu mới",
+    "confirmNewPassword": "Nhập lại mật khẩu mới",
+    "submit": "Lưu thông tin",
+    "success": "Đổi mật khẩu thành công",
+    "cancel": "Hủy"
+  },
+  "GuestLogin": {
+    "welcome": "Chào mừng đến với Nhà hàng năm mùa",
+    "tableNumber": "Bàn số {number}",
+    "yourName": "Tên của bạn",
+    "namePlaceholder": "Nhập tên của bạn...",
+    "submit": "Bắt đầu gọi món",
+    "footer": "Quét mã QR trên bàn để bắt đầu"
+  },
+  "GuestMenu": {
+    "all": "Tất cả",
+    "appetizer": "Khai vị",
+    "mainCourse": "Món chính",
+    "drink": "Đồ uống",
+    "dessert": "Tráng miệng",
+    "noDishes": "Chưa có món ăn nào trong danh mục này.",
+    "outOfStock": "Hết hàng",
+    "total": "Tổng cộng",
+    "orderButton": "Đặt {count} món",
+    "table": "Bàn {number}"
+  },
+  "GuestOrders": {
+    "title": "Đơn hàng",
+    "description": "Quản lý và thanh toán các món bạn đã gọi",
+    "status": {
+      "Pending": "Chờ xác nhận",
+      "Processing": "Đang chế biến",
+      "Delivered": "Đã phục vụ",
+      "Paid": "Đã thanh toán",
+      "Rejected": "Đã từ chối"
+    },
+    "payment": "Thanh toán",
+    "total": "Tổng cộng",
+    "noOrders": "Bạn chưa gọi món nào.",
+    "backToMenu": "Quay lại thực đơn",
+    "paidOrders": "Đơn đã thanh toán ({count} món)",
+    "unpaidOrders": "Đơn chưa thanh toán ({count} món)",
+    "updateOrderToast": "Cập nhật đơn hàng",
+    "updateOrderDescription": "Món {name} (SL: {quantity}) vừa được cập nhật sang trạng thái {status}",
+    "paymentToast": "Thanh toán đơn hàng",
+    "paymentDescription": "{name} tại bàn {tableNumber} thanh toán thành công {count} đơn"
+  },
+
+  "QrPayment": {
+    "button": "Thanh toán bằng QR",
+    "title": "Thanh toán đơn hàng",
+    "description": "Quét mã QR bằng ứng dụng ngân hàng để thanh toán {amount}",
+    "success": "Thanh toán thành công!",
+    "qrAlt": "QR Code thanh toán",
+    "qrInfo": "Thanh toan don hang"
   }
 }

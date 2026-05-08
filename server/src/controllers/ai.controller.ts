@@ -97,7 +97,7 @@ export const aiChatController = async (
     history && history.length > 0
       ? `LỊCH SỬ CHAT:\n${history.map((h) => `${h.role === 'user' ? 'Khách' : 'AI'}: ${h.content}`).join('\n')}`
       : ''
-  
+
   const prompt = `
     Bạn là trợ lý ảo của nhà hàng RMS-AI. Hôm nay là ngày ${currentDate}.
     THỰC ĐƠN:

@@ -40,6 +40,7 @@ export const createOrdersController = async (orderHandlerId: number, body: Creat
             data: {
               description: dish.description,
               image: dish.image,
+              images360: dish.images360,
               name: dish.name,
               price: dish.price,
               dishId: dish.id,
@@ -199,6 +200,7 @@ export const updateOrderController = async (
         data: {
           description: dish.description,
           image: dish.image,
+          images360: dish.images360,
           name: dish.name,
           price: dish.price,
           dishId: dish.id,

@@ -56,6 +56,7 @@ import {
 } from "@/lib/utils";
 import DOMPurify from "dompurify";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 type DishItem = DishListResType["data"][0];
 
@@ -71,87 +72,96 @@ const DishTableContext = createContext<{
   setDishDelete: (value: DishItem | null) => {},
 });
 
-export const columns: ColumnDef<DishItem>[] = [
-  {
-    accessorKey: "id",
-    header: "ID",
-  },
-  {
-    accessorKey: "image",
-    header: "Ảnh",
-    cell: ({ row }) => (
-      <div>
-        <Avatar className="aspect-square w-[100px] h-[100px] rounded-md object-cover">
-          <AvatarImage src={row.getValue("image")} />
-          <AvatarFallback className="rounded-none">
-            {row.original.name}
-          </AvatarFallback>
-        </Avatar>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "name",
-    header: "Tên",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "price",
-    header: "Giá cả",
-    cell: ({ row }) => (
-      <div className="capitalize">{formatCurrency(row.getValue("price"))}</div>
-    ),
-  },
-  {
-    accessorKey: "description",
-    header: "Mô tả",
-    cell: ({ row }) => (
-      <div
-        dangerouslySetInnerHTML={{
-          __html: DOMPurify.sanitize(row.getValue("description")),
-        }}
-        className="whitespace-pre-line"
-      />
-    ),
-  },
-  {
-    accessorKey: "status",
-    header: "Trạng thái",
-    cell: ({ row }) => (
-      <div>{getVietnameseDishStatus(row.getValue("status"))}</div>
-    ),
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: function Actions({ row }) {
-      const { setDishIdEdit, setDishDelete } = useContext(DishTableContext);
-      const openEditDish = () => {
-        setDishIdEdit(row.original.id);
-      };
+const useDishColumns = (
+  setDishIdEdit: (value: number) => void,
+  setDishDelete: (value: DishItem | null) => void,
+): ColumnDef<DishItem>[] => {
+  const t = useTranslations("ManageDishes");
+  const tStatus = useTranslations("DishStatus");
 
-      const openDeleteDish = () => {
-        setDishDelete(row.original);
-      };
-      return (
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <DotsHorizontalIcon className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={openEditDish}>Sửa</DropdownMenuItem>
-            <DropdownMenuItem onClick={openDeleteDish}>Xóa</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+  return [
+    {
+      accessorKey: "id",
+      header: t("id"),
     },
-  },
-];
+    {
+      accessorKey: "image",
+      header: t("image"),
+      cell: ({ row }) => (
+        <div>
+          <Avatar className="aspect-square w-[100px] h-[100px] rounded-md object-cover">
+            <AvatarImage src={row.getValue("image")} />
+            <AvatarFallback className="rounded-none">
+              {row.original.name}
+            </AvatarFallback>
+          </Avatar>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "name",
+      header: t("name"),
+      cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
+    },
+    {
+      accessorKey: "price",
+      header: t("price"),
+      cell: ({ row }) => (
+        <div className="capitalize">{formatCurrency(row.getValue("price"))}</div>
+      ),
+    },
+    {
+      accessorKey: "description",
+      header: t("descriptionLabel"),
+      cell: ({ row }) => (
+        <div
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(row.getValue("description")),
+          }}
+          className="whitespace-pre-line"
+        />
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: t("status"),
+      cell: ({ row }) => <div>{tStatus(row.getValue("status") as any)}</div>,
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: function Actions({ row }) {
+        const openEditDish = () => {
+          setDishIdEdit(row.original.id);
+        };
+
+        const openDeleteDish = () => {
+          setDishDelete(row.original);
+        };
+        return (
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <DotsHorizontalIcon className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>{t("actions")}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={openEditDish}>
+                {t("edit", { defaultValue: "Edit" })}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={openDeleteDish}>
+                {t("delete", { defaultValue: "Delete" })}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
+};
 
 function AlertDialogDeleteDish({
   dishDelete,
@@ -161,6 +171,7 @@ function AlertDialogDeleteDish({
   setDishDelete: (value: DishItem | null) => void;
 }) {
   const { mutateAsync } = useDeleteDishMutation();
+  const t = useTranslations("DeleteDish");
   const deleteDish = async () => {
     if (dishDelete) {
       try {
@@ -186,18 +197,14 @@ function AlertDialogDeleteDish({
     >
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Xóa món ăn?</AlertDialogTitle>
+          <AlertDialogTitle>{t("title")}</AlertDialogTitle>
           <AlertDialogDescription>
-            Món{" "}
-            <span className="bg-foreground text-primary-foreground rounded px-1">
-              {dishDelete?.name}
-            </span>{" "}
-            sẽ bị xóa vĩnh viễn
+            {t("description", { name: dishDelete?.name })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={deleteDish}>Continue</AlertDialogAction>
+          <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+          <AlertDialogAction onClick={deleteDish}>{t("continue")}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -206,11 +213,13 @@ function AlertDialogDeleteDish({
 // Số lượng item trên 1 trang
 const PAGE_SIZE = 10;
 export default function DishTable() {
+  const t = useTranslations("ManageDishes");
   const searchParam = useSearchParams();
   const page = searchParam.get("page") ? Number(searchParam.get("page")) : 1;
   const pageIndex = page - 1;
   const [dishIdEdit, setDishIdEdit] = useState<number | undefined>();
   const [dishDelete, setDishDelete] = useState<DishItem | null>(null);
+  const columns = useDishColumns(setDishIdEdit, setDishDelete);
   const dishListQuery = useDishListQuery();
   const data = dishListQuery.data?.payload.data ?? [];
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -255,26 +264,26 @@ export default function DishTable() {
     <DishTableContext.Provider
       value={{ dishIdEdit, setDishIdEdit, dishDelete, setDishDelete }}
     >
-      <div className="w-full">
+      <div className="w-full space-y-6">
         <EditDish id={dishIdEdit} setId={setDishIdEdit} />
         <AlertDialogDeleteDish
           dishDelete={dishDelete}
           setDishDelete={setDishDelete}
         />
-        <div className="flex items-center py-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-4 glass-card p-4 sm:p-5 rounded-2xl">
           <Input
-            placeholder="Lọc tên"
-            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            placeholder={t("filterPlaceholder")}
+            value={(table.getColumn("name") ?? table.getColumn(t("name")))?.getFilterValue() as string ?? ""}
             onChange={(event) =>
-              table.getColumn("name")?.setFilterValue(event.target.value)
+              (table.getColumn("name") ?? table.getColumn(t("name")))?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="w-full sm:max-w-sm bg-background border-border text-foreground rounded-lg focus-visible:ring-secondary"
           />
-          <div className="ml-auto flex items-center gap-2">
+          <div className="w-full sm:w-auto flex items-center gap-2">
             <AddDish />
           </div>
         </div>
-        <div className="rounded-md border">
+        <div className="rounded-xl border border-border overflow-hidden bg-background/50 glass-card">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -317,18 +326,18 @@ export default function DishTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {t("noResults")}
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
         </div>
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="text-xs text-muted-foreground py-4 flex-1 ">
-            Hiển thị{" "}
-            <strong>{table.getPaginationRowModel().rows.length}</strong> trong{" "}
-            <strong>{data.length}</strong> kết quả
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 mt-2">
+          <div className="text-xs text-muted-foreground font-body py-2 sm:py-0">
+            {t("showing")}{" "}
+            <strong className="text-foreground font-medium">{table.getPaginationRowModel().rows.length}</strong> {t("in")}{" "}
+            <strong className="text-foreground font-medium">{data.length}</strong> {t("results")}
           </div>
           <div>
             <AutoPagination

@@ -41,8 +41,12 @@ import { PlusCircle, Upload } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { useForm, Resolver } from "react-hook-form";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 export default function AddDish() {
+  const t = useTranslations("AddDish");
+  const tManage = useTranslations("ManageDishes");
+  const tStatus = useTranslations("DishStatus");
   const [file, setFile] = useState<File | null>(null);
   const [open, setOpen] = useState(false);
   const addDishMutation = useAddDishMutation();
@@ -88,12 +92,12 @@ export default function AddDish() {
           image: imageUrl,
         };
       } else if (!values.image) {
-        form.setError("image", { message: "Vui lòng chọn ảnh" });
+        form.setError("image", { message: t("selectImage") });
         return;
       }
       const result = await addDishMutation.mutateAsync(body);
       await revalidateApiRequest("dishes");
-      toast("Thành Công", {
+      toast(tManage("success"), {
         description: result.payload.message,
       });
       reset();
@@ -109,16 +113,19 @@ export default function AddDish() {
   return (
     <AlertDialog onOpenChange={setOpen} open={open}>
       <AlertDialogTrigger asChild>
-        <Button size="sm" className="h-7 gap-1">
-          <PlusCircle className="h-3.5 w-3.5" />
+        <Button
+          size="sm"
+          className="h-9 gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/90 font-medium"
+        >
+          <PlusCircle className="h-4 w-4" />
           <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-            Thêm món ăn
+            {t("buttonAdd")}
           </span>
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="sm:max-w-[600px] max-h-screen overflow-auto">
+      <AlertDialogContent className="sm:max-w-[600px] max-h-screen overflow-auto bg-surface-container border-border text-foreground rounded-2xl shadow-2xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Thêm món ăn</AlertDialogTitle>
+          <AlertDialogTitle>{t("title")}</AlertDialogTitle>
         </AlertDialogHeader>
         <Form {...form}>
           <form
@@ -140,7 +147,7 @@ export default function AddDish() {
                       <Avatar className="aspect-square w-[100px] h-[100px] rounded-md object-cover">
                         <AvatarImage src={previewAvatarFromFile} />
                         <AvatarFallback className="rounded-none">
-                          {name || "Ảnh món ăn"}
+                          {name || t("imageLabel")}
                         </AvatarFallback>
                       </Avatar>
                       <input
@@ -164,7 +171,7 @@ export default function AddDish() {
                         onClick={() => imageInputRef.current?.click()}
                       >
                         <Upload className="h-4 w-4 text-muted-foreground" />
-                        <span className="sr-only">Upload</span>
+                        <span className="sr-only">{t("upload")}</span>
                       </button>
                     </div>
                   </FormItem>
@@ -177,7 +184,7 @@ export default function AddDish() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="name">Tên món ăn</Label>
+                      <Label htmlFor="name">{t("name")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input id="name" className="w-full" {...field} />
                         <FormMessage />
@@ -192,7 +199,7 @@ export default function AddDish() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="price">Giá</Label>
+                      <Label htmlFor="price">{t("price")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Input
                           id="price"
@@ -215,7 +222,7 @@ export default function AddDish() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="description">Mô tả sản phẩm</Label>
+                      <Label htmlFor="description">{t("description")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Textarea
                           id="description"
@@ -234,7 +241,7 @@ export default function AddDish() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="description">Trạng thái</Label>
+                      <Label htmlFor="description">{t("status")}</Label>
                       <div className="col-span-3 w-full space-y-2">
                         <Select
                           onValueChange={field.onChange}
@@ -242,13 +249,13 @@ export default function AddDish() {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Chọn trạng thái" />
+                              <SelectValue placeholder={t("selectStatus")} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             {DishStatusValues.map((status) => (
                               <SelectItem key={status} value={status}>
-                                {getVietnameseDishStatus(status)}
+                                {tStatus(status)}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -259,12 +266,63 @@ export default function AddDish() {
                   </FormItem>
                 )}
               />
+
+              <div className="grid grid-cols-4 items-start justify-items-start gap-4">
+                <Label className="mt-2">Ảnh 360°</Label>
+                <div className="col-span-3 w-full space-y-4">
+                  <div className="flex flex-wrap gap-2">
+                    {form.watch("images360")?.map((url, idx) => (
+                      <div key={idx} className="relative w-16 h-16 rounded-md overflow-hidden border">
+                        <img src={url} alt={`360-${idx}`} className="w-full h-full object-cover" />
+                        <button 
+                          type="button"
+                          className="absolute top-0 right-0 bg-red-500 text-white w-4 h-4 flex items-center justify-center text-[10px]"
+                          onClick={() => {
+                            const current = form.getValues("images360") || [];
+                            form.setValue("images360", current.filter((_, i) => i !== idx));
+                          }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      className="flex aspect-square w-16 items-center justify-center rounded-md border border-dashed hover:bg-secondary/10 transition-colors"
+                      onClick={() => {
+                        const input = document.createElement("input");
+                        input.type = "file";
+                        input.multiple = true;
+                        input.accept = "image/*";
+                        input.onchange = async (e) => {
+                          const files = (e.target as HTMLInputElement).files;
+                          if (files) {
+                            const newUrls: string[] = [];
+                            for (let i = 0; i < files.length; i++) {
+                              const formData = new FormData();
+                              formData.append("file", files[i]);
+                              const res = await uploadMediaMutation.mutateAsync(formData);
+                              newUrls.push(res.payload.data);
+                            }
+                            const current = form.getValues("images360") || [];
+                            form.setValue("images360", [...current, ...newUrls]);
+                          }
+                        };
+                        input.click();
+                      }}
+                    >
+                      <PlusCircle className="h-4 w-4 text-muted-foreground" />
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">Tải lên ít nhất 12 ảnh để có trải nghiệm 360 tốt nhất.</p>
+                </div>
+              </div>
             </div>
           </form>
         </Form>
         <AlertDialogFooter>
           <Button type="submit" form="add-dish-form">
-            Thêm
+            {t("submit")}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

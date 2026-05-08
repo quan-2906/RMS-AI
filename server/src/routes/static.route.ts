@@ -5,13 +5,7 @@ import path from 'path'
 
 export default async function staticRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   fastify.register(fastifyStatic, {
-    root: path.resolve(envConfig.UPLOAD_FOLDER)
-  })
-  fastify.get<{
-    Params: {
-      id: string
-    }
-  }>('/static/:id', async (request, reply) => {
-    return reply.sendFile(request.params.id)
+    root: path.resolve(envConfig.UPLOAD_FOLDER),
+    wildcard: true
   })
 }

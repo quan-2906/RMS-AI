@@ -132,16 +132,16 @@ export default function DishReviewCard({
   };
 
   return (
-    <div className="rounded-xl border bg-card shadow-sm overflow-hidden transition-shadow hover:shadow-md">
-      <div className="flex gap-4 p-4 border-b bg-muted/30">
+    <div className="glass-card rounded-2xl overflow-hidden border border-border/30 shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-all hover:shadow-[0_4px_25px_rgba(212,175,55,0.1)]">
+      <div className="flex gap-4 p-4 border-b border-border/50 bg-surface-container/50">
         <div className="flex-shrink-0">
           <Image
             src={dishImage}
             alt={dishName}
-            width={72}
-            height={72}
+            width={80}
+            height={80}
             quality={90}
-            className="object-cover rounded-lg w-[72px] h-[72px]"
+            className="object-cover rounded-xl w-[80px] h-[80px] shadow-sm"
           />
         </div>
         <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
@@ -156,7 +156,7 @@ export default function DishReviewCard({
           {myReview ? (
             <Badge
               variant="default"
-              className="gap-1 bg-green-500/15 text-green-600 hover:bg-green-500/20 border-green-500/30 text-xs"
+              className="gap-1 bg-green-500/10 text-green-500 hover:bg-green-500/20 border border-green-500/20 text-xs py-0.5 px-2"
             >
               <CheckCircle2 className="w-3 h-3" />
               {t("alreadyReviewed")}
@@ -164,7 +164,7 @@ export default function DishReviewCard({
           ) : (
             <Badge
               variant="outline"
-              className="gap-1 text-muted-foreground text-xs"
+              className="gap-1 text-muted-foreground text-xs py-0.5 px-2 border-border"
             >
               <MessageSquarePlus className="w-3 h-3" />
               {t("pendingReview")}
@@ -187,7 +187,7 @@ export default function DishReviewCard({
           <div className="space-y-3">
             <StarRating value={myReview.rating} readonly />
             {myReview.comment && (
-              <p className="text-sm text-muted-foreground italic leading-relaxed bg-muted/40 rounded-lg px-3 py-2">
+              <p className="text-sm text-foreground/80 italic leading-relaxed bg-background/50 border border-border/30 rounded-xl px-4 py-3">
                 "{myReview.comment}"
               </p>
             )}
@@ -210,7 +210,7 @@ export default function DishReviewCard({
                     <span className="text-xs">{t("deleteReview")}</span>
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent>
+                <AlertDialogContent className="sm:max-w-[425px] w-[95vw] rounded-2xl bg-surface-container border-border text-foreground shadow-2xl">
                   <AlertDialogHeader>
                     <AlertDialogTitle>{t("deleteReview")}</AlertDialogTitle>
                     <AlertDialogDescription>
@@ -244,11 +244,11 @@ export default function DishReviewCard({
               onChange={(e) => setComment(e.target.value)}
               placeholder={t("commentPlaceholder")}
               rows={3}
-              className="resize-none text-sm"
+              className="resize-none text-sm bg-background border-border text-foreground rounded-xl focus-visible:ring-secondary"
             />
             <Button
               size="sm"
-              className="w-full gap-2"
+              className="w-full h-11 gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/90 font-semibold rounded-xl shadow-[0_0_15px_rgba(212,175,55,0.2)]"
               onClick={handleSubmit}
               disabled={createReviewMutation.isPending}
             >

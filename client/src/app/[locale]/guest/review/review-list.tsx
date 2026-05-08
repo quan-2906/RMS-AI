@@ -45,7 +45,7 @@ export default function ReviewList() {
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="rounded-xl border bg-card h-40 animate-pulse"
+            className="glass-card rounded-2xl h-44 animate-pulse opacity-50"
           />
         ))}
       </div>
@@ -54,11 +54,11 @@ export default function ReviewList() {
 
   if (reviewableDishes.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 py-16 text-center text-muted-foreground">
-        <div className="rounded-full bg-muted p-5">
-          <ClipboardList className="w-10 h-10 text-muted-foreground/60" />
+      <div className="flex flex-col items-center justify-center gap-4 py-20 text-center text-muted-foreground glass-card rounded-3xl mt-10 p-6 border border-border/30">
+        <div className="rounded-full bg-secondary/10 p-5 shadow-[0_0_30px_rgba(212,175,55,0.15)] border border-secondary/20">
+          <ClipboardList className="w-10 h-10 text-secondary" />
         </div>
-        <p className="text-sm max-w-[260px] leading-relaxed">{t("noDishes")}</p>
+        <p className="text-base font-medium max-w-[260px] leading-relaxed text-foreground/80">{t("noDishes")}</p>
       </div>
     );
   }

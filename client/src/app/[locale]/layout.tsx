@@ -1,4 +1,8 @@
-import { Inter as FontSans } from "next/font/google";
+import {
+  Inter as FontSans,
+  Noto_Serif,
+  Be_Vietnam_Pro,
+} from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { NextIntlClientProvider } from "next-intl";
@@ -18,11 +22,23 @@ import { notFound } from "next/navigation";
 import { CardFooter } from "@/components/ui/card";
 import GoogleTag from "@/components/ui/google-tag";
 import AiChatbot from "@/components/ai-chatbot";
-
+import Head from "next/head";
 
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
+});
+
+const fontSerif = Noto_Serif({
+  subsets: ["latin", "vietnamese"],
+  variable: "--font-serif",
+  weight: ["400", "500", "600", "700"],
+});
+
+const fontBody = Be_Vietnam_Pro({
+  subsets: ["latin", "vietnamese"],
+  variable: "--font-body",
+  weight: ["400", "500", "600", "700"],
 });
 export async function generateMetadata(props: {
   params: Promise<{ locale: Locale }>;
@@ -65,10 +81,18 @@ export default async function RootLayout(
   const messages = await getMessages();
   return (
     <html lang={locale} suppressHydrationWarning>
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        />
+      </head>
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
+          "min-h-screen bg-background font-body antialiased",
           fontSans.variable,
+          fontSerif.variable,
+          fontBody.variable,
         )}
       >
         <NextTopLoader showSpinner={false} color="hsl(var(--foreground))" />
@@ -84,7 +108,6 @@ export default async function RootLayout(
               <AiChatbot />
               <CardFooter />
               <Toaster />
-
             </ThemeProvider>
           </AppProvider>
         </NextIntlClientProvider>

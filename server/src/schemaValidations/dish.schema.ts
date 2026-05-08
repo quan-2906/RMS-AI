@@ -6,6 +6,7 @@ export const CreateDishBody = z.object({
   price: z.coerce.number().positive(),
   description: z.string().max(10000),
   image: z.string().url(),
+  images360: z.array(z.string()).nullable().optional(),
   status: z.enum(DishStatusValues).optional()
 })
 
@@ -17,6 +18,7 @@ export const DishSchema = z.object({
   price: z.coerce.number(),
   description: z.string(),
   image: z.string(),
+  images360: z.array(z.string()).nullable().optional(),
   status: z.enum(DishStatusValues),
   rating: z.number().default(0),
   createdAt: z.date(),
