@@ -276,3 +276,61 @@ export const createGuestController = async (body: CreateGuestBodyType) => {
   })
   return guest
 }
+
+import { generateSecret, generateURI, verify } from 'otplib'
+import qrcode from 'qrcode'
+import { AuthError } from '@/utils/errors'
+
+export const generate2FAController = async (accountId: number) => {
+  const account = await prisma.account.findUniqueOrThrow({ where: { id: accountId } })
+  const secret = generateSecret()
+  const otpauth = generateURI({
+    issuer: 'RMS-AI',
+    label: account.email,
+    secret
+  })
+  
+  await prisma.account.update({
+    where: { id: accountId },
+    data: { twoFactorSecret: secret, isTwoFactorEnabled: false }
+  })
+
+  const qrCodeUrl = await qrcode.toDataURL(otpauth)
+  return qrCodeUrl
+}
+
+export const verifySetup2FAController = async (accountId: number, otp: string) => {
+  const account = await prisma.account.findUniqueOrThrow({ where: { id: accountId } })
+  if (!account.twoFactorSecret) {
+    throw new AuthError('Chưa tạo secret key cho 2FA')
+  }
+
+  const result = await verify({
+    token: otp,
+    secret: account.twoFactorSecret
+  })
+
+  if (!result.valid) {
+    throw new EntityError([{ field: 'otp', message: 'Mã xác thực không chính xác' }])
+  }
+
+  await prisma.account.update({
+    where: { id: accountId },
+    data: { isTwoFactorEnabled: true }
+  })
+  return true
+}
+
+export const disable2FAController = async (accountId: number, password: string) => {
+  const account = await prisma.account.findUniqueOrThrow({ where: { id: accountId } })
+  const isPasswordMatch = await comparePassword(password, account.password)
+  if (!isPasswordMatch) {
+    throw new EntityError([{ field: 'password', message: 'Mật khẩu không đúng' }])
+  }
+
+  await prisma.account.update({
+    where: { id: accountId },
+    data: { isTwoFactorEnabled: false, twoFactorSecret: null }
+  })
+  return true
+}

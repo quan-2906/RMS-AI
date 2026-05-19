@@ -378,7 +378,8 @@
     "avatarLabel": "Avatar",
     "selectAvatar": "Select image",
     "success": "Success",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "upload": "Upload"
   },
   "ChangePassword": {
     "title": "Change Password",

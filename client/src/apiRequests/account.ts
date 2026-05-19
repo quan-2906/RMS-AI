@@ -12,6 +12,9 @@ import {
   GetListGuestsResType,
   UpdateEmployeeAccountBodyType,
   UpdateMeBodyType,
+  Generate2FAResType,
+  VerifySetup2FABodyType,
+  Disable2FABodyType,
 } from "@/schemaValidations/account.schema";
 import queryString from "query-string";
 
@@ -64,6 +67,15 @@ const accountApiRequest = {
 
   createGuest: (body: CreateGuestBodyType) =>
     http.post<CreateGuestResType>(`${prefix}/guests`, body),
+
+  generate2FA: () =>
+    http.post<Generate2FAResType>(`${prefix}/2fa/generate`, {}),
+
+  verifySetup2FA: (body: VerifySetup2FABodyType) =>
+    http.post<{ message: string }>(`${prefix}/2fa/verify-setup`, body),
+
+  disable2FA: (body: Disable2FABodyType) =>
+    http.post<{ message: string }>(`${prefix}/2fa/disable`, body),
 };
 
 export default accountApiRequest;

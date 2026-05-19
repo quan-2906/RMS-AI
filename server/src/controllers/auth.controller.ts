@@ -4,7 +4,7 @@ import { LoginBodyType } from '@/schemaValidations/auth.schema'
 import { RoleType, TokenPayload } from '@/types/jwt.types'
 import { comparePassword } from '@/utils/crypto'
 import { AuthError, EntityError, StatusError } from '@/utils/errors'
-import { signAccessToken, signRefreshToken, verifyRefreshToken } from '@/utils/jwt'
+import { signAccessToken, signRefreshToken, verifyRefreshToken, signTwoFactorToken, verifyTwoFactorToken } from '@/utils/jwt'
 import axios from 'axios'
 
 export const logoutController = async (refreshToken: string) => {
@@ -29,6 +29,17 @@ export const loginController = async (body: LoginBodyType) => {
   if (!isPasswordMatch) {
     throw new EntityError([{ field: 'password', message: 'Email hoặc mật khẩu không đúng' }])
   }
+  if (account.isTwoFactorEnabled) {
+    const twoFactorToken = signTwoFactorToken({ userId: account.id })
+    return {
+      message: 'Vui lòng nhập mã xác thực 2 bước',
+      data: {
+        require2FA: true,
+        twoFactorToken
+      }
+    }
+  }
+
   const accessToken = signAccessToken({
     userId: account.id,
     role: account.role as RoleType
@@ -199,7 +210,60 @@ export const loginGoogleController = async (code: string) => {
       id: account.id,
       name: account.name,
       email: account.email,
-      role: account.role as RoleType
+      role: account.role as RoleType,
+      isTwoFactorEnabled: account.isTwoFactorEnabled
     }
+  }
+}
+
+import { verify } from 'otplib'
+
+export const verify2FALoginController = async (twoFactorToken: string, otp: string) => {
+  let decoded: TokenPayload
+  try {
+    decoded = verifyTwoFactorToken(twoFactorToken)
+  } catch (error) {
+    throw new AuthError('Token xác thực 2 bước không hợp lệ hoặc đã hết hạn')
+  }
+
+  const account = await prisma.account.findUnique({
+    where: { id: decoded.userId }
+  })
+
+  if (!account || !account.isTwoFactorEnabled || !account.twoFactorSecret) {
+    throw new AuthError('Tài khoản không hợp lệ hoặc chưa bật 2FA')
+  }
+
+  const result = await verify({
+    token: otp,
+    secret: account.twoFactorSecret
+  })
+
+  if (!result.valid) {
+    throw new EntityError([{ field: 'otp', message: 'Mã xác thực không chính xác' }])
+  }
+
+  const accessToken = signAccessToken({
+    userId: account.id,
+    role: account.role as RoleType
+  })
+  const refreshToken = signRefreshToken({
+    userId: account.id,
+    role: account.role as RoleType
+  })
+  const decodedRefreshToken = verifyRefreshToken(refreshToken)
+  const refreshTokenExpiresAt = new Date(decodedRefreshToken.exp * 1000)
+
+  await prisma.refreshToken.create({
+    data: {
+      accountId: account.id,
+      token: refreshToken,
+      expiresAt: refreshTokenExpiresAt
+    }
+  })
+  return {
+    account,
+    accessToken,
+    refreshToken
   }
 }

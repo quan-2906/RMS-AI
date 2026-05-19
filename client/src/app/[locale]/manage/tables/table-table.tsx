@@ -102,7 +102,7 @@ const useTableColumns = (
     {
       accessorKey: "status",
       header: t("status"),
-      cell: ({ row }) => <div>{tStatus(row.getValue("status") as keyof typeof TableStatus)}</div>,
+      cell: ({ row }) => <div>{tStatus(row.getValue("status") as any)}</div>,
     },
     {
       accessorKey: "token",
@@ -190,7 +190,7 @@ function AlertDialogDeleteTable({
         <AlertDialogHeader>
           <AlertDialogTitle>{t("title")}</AlertDialogTitle>
           <AlertDialogDescription>
-            {t("description", { number: tableDelete?.number })}
+            {t("description", { number: tableDelete?.number ?? 0 })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

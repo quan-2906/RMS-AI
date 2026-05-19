@@ -378,7 +378,8 @@
     "avatarLabel": "Avatar",
     "selectAvatar": "Chọn ảnh",
     "success": "Thành công",
-    "cancel": "Hủy"
+    "cancel": "Hủy",
+    "upload": "Tải lên"
   },
   "ChangePassword": {
     "title": "Đổi mật khẩu",

@@ -1,23 +1,15 @@
 import authApiRequest from "@/apiRequests/auth";
-import { LoginBodyType } from "@/schemaValidations/auth.schema";
+import { Verify2FABodyType } from "@/schemaValidations/auth.schema";
 import { cookies } from "next/headers";
 import Jwt from "jsonwebtoken";
 import { HttpError } from "@/lib/http";
 
 export async function POST(request: Request) {
-  const body = (await request.json()) as LoginBodyType;
+  const body = (await request.json()) as Verify2FABodyType;
   const cookieStore = await cookies();
 
   try {
-    const { payload } = await authApiRequest.sLogin(body);
-
-    if (payload.data.require2FA) {
-      return Response.json({
-        message: "Vui lòng nhập mã xác thực 2 bước",
-        data: payload.data,
-      });
-    }
-
+    const { payload } = await authApiRequest.sVerify2FA(body);
     const { accessToken, refreshToken } = payload.data;
 
     const decodedAccessToken = Jwt.decode(accessToken!) as { exp: number };

@@ -210,8 +210,8 @@ export default function OrderTable() {
       const { guest } = data[0];
       toast(t("notifications.newOrderTitle"), {
         description: t("notifications.newOrderDesc", {
-          name: guest?.name,
-          table: guest?.tableNumber,
+          name: guest?.name ?? "",
+          table: guest?.tableNumber ?? 0,
           count: data.length,
         }),
       });
@@ -222,8 +222,8 @@ export default function OrderTable() {
       const { guest } = data[0];
       toast(t("notifications.paymentTitle"), {
         description: t("notifications.paymentDesc", {
-          name: guest?.name,
-          table: guest?.tableNumber,
+          name: guest?.name ?? "",
+          table: guest?.tableNumber ?? 0,
           count: data.length,
         }),
       });

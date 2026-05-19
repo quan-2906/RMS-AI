@@ -193,7 +193,7 @@ function AlertDialogDeleteAccount({
         <AlertDialogHeader>
           <AlertDialogTitle>{t("title")}</AlertDialogTitle>
           <AlertDialogDescription>
-            {t("description", { name: employeeDelete?.name })}
+            {t("description", { name: employeeDelete?.name ?? "" })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -2,6 +2,7 @@ import prisma from '@/database'
 import { CreateTableBodyType, UpdateTableBodyType } from '@/schemaValidations/table.schema'
 import { EntityError, isPrismaClientKnownRequestError } from '@/utils/errors'
 import { randomId } from '@/utils/helpers'
+import { sendTelegramMessage } from '@/utils/telegram'
 
 export const getTableList = () => {
   return prisma.table.findMany({
@@ -28,6 +29,9 @@ export const createTable = async (data: CreateTableBodyType) => {
         token
       }
     })
+    try {
+      sendTelegramMessage(`🪑 <b>Thêm bàn mới</b>\nBàn số: ${result.number}\nSức chứa: ${result.capacity}`)
+    } catch (err) {}
     return result
   } catch (error) {
     if (isPrismaClientKnownRequestError(error) && error.code === 'P2002') {
@@ -42,7 +46,7 @@ export const createTable = async (data: CreateTableBodyType) => {
   }
 }
 
-export const updateTable = (number: number, data: UpdateTableBodyType) => {
+export const updateTable = async (number: number, data: UpdateTableBodyType) => {
   if (data.changeToken) {
     const token = randomId()
     // Xóa hết các refresh token của guest theo table
@@ -68,10 +72,13 @@ export const updateTable = (number: number, data: UpdateTableBodyType) => {
           }
         })
       ])
+      try {
+        sendTelegramMessage(`🛠 <b>Cập nhật bàn</b>\nBàn số: ${table.number}\nTrạng thái: ${table.status}`)
+      } catch (err) {}
       return table
     })
   }
-  return prisma.table.update({
+  const result = await prisma.table.update({
     where: {
       number
     },
@@ -80,12 +87,20 @@ export const updateTable = (number: number, data: UpdateTableBodyType) => {
       capacity: data.capacity
     }
   })
+  try {
+    sendTelegramMessage(`🛠 <b>Cập nhật bàn</b>\nBàn số: ${result.number}\nTrạng thái: ${result.status}`)
+  } catch (err) {}
+  return result
 }
 
-export const deleteTable = (number: number) => {
-  return prisma.table.delete({
+export const deleteTable = async (number: number) => {
+  const result = await prisma.table.delete({
     where: {
       number
     }
   })
+  try {
+    sendTelegramMessage(`🗑 <b>Xóa bàn</b>\nBàn số: ${result.number}`)
+  } catch (err) {}
+  return result
 }

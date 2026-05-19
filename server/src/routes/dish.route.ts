@@ -64,7 +64,7 @@ export default async function dishRoutes(fastify: FastifyInstance, options: Fast
       const data = await getDishListWithPagination(page, limit)
       reply.send({
         data: {
-          items: data.items as DishListWithPaginationResType['data']['items'],
+          items: data.items as any as DishListWithPaginationResType['data']['items'],
           totalItem: data.totalItem,
           totalPage: data.totalPage,
           page,

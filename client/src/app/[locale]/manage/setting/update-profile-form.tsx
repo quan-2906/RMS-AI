@@ -156,6 +156,7 @@ export default function UpdateProfileForm() {
                         type="text"
                         className="w-full"
                         {...field}
+                        value={field.value ?? ""}
                       />
                       <FormMessage />
                     </div>

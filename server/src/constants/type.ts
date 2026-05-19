@@ -2,7 +2,8 @@ export const TokenType = {
   ForgotPasswordToken: 'ForgotPasswordToken',
   AccessToken: 'AccessToken',
   RefreshToken: 'RefreshToken',
-  TableToken: 'TableToken'
+  TableToken: 'TableToken',
+  TwoFactorToken: 'TwoFactorToken'
 } as const
 
 export const Role = {

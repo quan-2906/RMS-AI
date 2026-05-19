@@ -23,20 +23,20 @@ export async function POST(request: Request) {
       body,
     );
 
-    const decodedAccessToken = jwt.decode(payload.data.accessToken) as {
+    const decodedAccessToken = jwt.decode(payload.data.accessToken!) as {
       exp: number;
     };
-    const decodedRefreshToken = jwt.decode(payload.data.refreshToken) as {
+    const decodedRefreshToken = jwt.decode(payload.data.refreshToken!) as {
       exp: number;
     };
-    cookieStore.set("accessToken", payload.data.accessToken, {
+    cookieStore.set("accessToken", payload.data.accessToken!, {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
       secure: true,
       expires: decodedAccessToken.exp * 1000,
     });
-    cookieStore.set("refreshToken", payload.data.refreshToken, {
+    cookieStore.set("refreshToken", payload.data.refreshToken!, {
       path: "/",
       httpOnly: true,
       sameSite: "lax",

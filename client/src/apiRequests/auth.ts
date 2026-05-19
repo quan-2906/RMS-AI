@@ -5,6 +5,7 @@ import {
   LogoutBodyType,
   RefreshTokenBodyType,
   RefreshTokenResType,
+  Verify2FABodyType,
 } from "@/schemaValidations/auth.schema";
 
 const authApiRequest = {
@@ -12,6 +13,14 @@ const authApiRequest = {
 
   login: (body: LoginBodyType) =>
     http.post<LoginResType>("/api/auth/login", body, {
+      baseUrl: "",
+    }),
+
+  sVerify2FA: (body: Verify2FABodyType) =>
+    http.post<LoginResType>("/auth/verify-2fa", body),
+
+  verify2FA: (body: Verify2FABodyType) =>
+    http.post<LoginResType>("/api/auth/verify-2fa", body, {
       baseUrl: "",
     }),
 

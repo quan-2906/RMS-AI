@@ -99,7 +99,7 @@ export default async function Home(props: {
               <div className="sm:w-2/5 h-64 sm:h-auto relative overflow-hidden bg-surface-container">
                 <Dish360CardPreview 
                   images360={dish.images360 as string[]} 
-                  defaultImage={dish.image} 
+                  defaultImage={dish.image ?? null} 
                   dishName={dish.name} 
                 />
               </div>

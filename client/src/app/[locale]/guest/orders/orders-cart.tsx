@@ -99,8 +99,8 @@ export default function OrderCart() {
       const { guest } = data[0];
       toast(t("paymentToast"), {
         description: t("paymentDescription", {
-          name: guest?.name,
-          tableNumber: guest?.tableNumber,
+          name: guest?.name ?? "",
+          tableNumber: guest?.tableNumber ?? 0,
           count: data.length,
         }),
       });

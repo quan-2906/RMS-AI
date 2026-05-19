@@ -1,5 +1,6 @@
 import UpdateProfileForm from "./update-profile-form";
 import ChangePasswordForm from "./change-password-form";
+import TwoFactorSetup from "./two-factor-setup";
 import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
 
@@ -19,6 +20,9 @@ export default function Setting() {
         <div className="grid gap-4 md:grid-cols-2 md:gap-8">
           <UpdateProfileForm />
           <ChangePasswordForm />
+          <div className="md:col-span-2">
+            <TwoFactorSetup />
+          </div>
         </div>
       </div>
     </main>

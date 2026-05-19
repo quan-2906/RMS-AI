@@ -60,9 +60,9 @@ export const aiChatController = async (
     .map((d) => {
       const avgRating =
         d.reviews.length > 0
-          ? (d.reviews.reduce((acc, r) => acc + r.rating, 0) / d.reviews.length).toFixed(1)
+          ? Number((d.reviews.reduce((acc, r) => acc + r.rating, 0) / d.reviews.length).toFixed(1))
           : 'Chưa có'
-      return `- ${d.id}: ${d.name} (${d.price.toLocaleString('vi-VN')}đ) - Đánh giá: ${avgRating}${avgRating !== 'Chưa có' ? '/5 ⭐' : ''}`
+      return `- ID ${d.id}: ${d.name} (${d.price.toLocaleString('vi-VN')}đ) - Đánh giá: ${avgRating}${avgRating !== 'Chưa có' ? ' sao' : ''}`
     })
     .join('\n')
   const tableContext = tables.map((t) => `- Bàn số ${t.number} (Sức chứa: ${t.capacity} người)`).join('\n')
@@ -108,7 +108,8 @@ export const aiChatController = async (
     ${guestContext}
     GỢI Ý MÓN ĂN:
     - Nếu khách nhờ gợi ý món ngon hoặc món bán chạy, hãy dựa vào số sao Đánh giá trong THỰC ĐƠN. 
-    - Ưu tiên giới thiệu các món có điểm Đánh giá từ 4.5 ⭐ trở lên. Nếu món chưa có đánh giá, hãy giới thiệu như một món mới nên thử.
+    - Ưu tiên giới thiệu các món có điểm Đánh giá từ 4.5 sao trở lên. Nếu món chưa có đánh giá, hãy giới thiệu như một món mới nên thử.
+    - TUYỆT ĐỐI KHÔNG hiển thị mã số (ID) của món ăn trong câu trả lời cho khách hàng (ví dụ: cấm viết "Bún Chả (53)", chỉ được viết "Bún Chả"). Mã số chỉ dùng để tạo lệnh [ORDER].
     QUY TẮC ĐẶT BÀN:
     - Nếu khách muốn đặt bàn, hãy tư vấn bàn phù hợp.
     - Hỏi khách thời gian đặt bàn (giờ bắt đầu và giờ kết thúc).

@@ -75,6 +75,7 @@ export default function ChangePasswordForm() {
                         type="password"
                         className="w-full"
                         {...field}
+                        value={field.value ?? ""}
                       />
                       <FormMessage />
                     </div>
@@ -94,6 +95,7 @@ export default function ChangePasswordForm() {
                         type="password"
                         className="w-full"
                         {...field}
+                        value={field.value ?? ""}
                       />
                       <FormMessage />
                     </div>
@@ -115,6 +117,7 @@ export default function ChangePasswordForm() {
                         type="password"
                         className="w-full"
                         {...field}
+                        value={field.value ?? ""}
                       />
                       <FormMessage />
                     </div>

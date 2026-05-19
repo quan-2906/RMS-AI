@@ -199,7 +199,7 @@ function AlertDialogDeleteDish({
         <AlertDialogHeader>
           <AlertDialogTitle>{t("title")}</AlertDialogTitle>
           <AlertDialogDescription>
-            {t("description", { name: dishDelete?.name })}
+            {t("description", { name: dishDelete?.name ?? "" })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

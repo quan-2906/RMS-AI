@@ -5,6 +5,7 @@ import { GuestCreateOrdersBodyType, GuestLoginBodyType } from '@/schemaValidatio
 import { TokenPayload } from '@/types/jwt.types'
 import { AuthError, StatusError } from '@/utils/errors'
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from '@/utils/jwt'
+import { sendTelegramMessage } from '@/utils/telegram'
 import ms from 'ms'
 
 export const guestLoginController = async (body: GuestLoginBodyType) => {
@@ -187,6 +188,28 @@ export const guestCreateOrdersController = async (guestId: number, body: GuestCr
     )
     return orders
   })
+  
+  // Bắn thông báo Telegram cho Chủ quán
+  try {
+    if (result.length > 0) {
+      const tableNumber = result[0].tableNumber
+      const totalQuantity = result.reduce((acc, order) => acc + order.quantity, 0)
+      let totalPrice = 0
+      let dishDetails = ''
+      result.forEach(order => {
+        const dishName = order.dishSnapshot.name
+        const price = order.dishSnapshot.price
+        const qty = order.quantity
+        dishDetails += `\n- ${dishName} x${qty} (${(price * qty).toLocaleString('vi-VN')}đ)`
+        totalPrice += price * qty
+      })
+      const message = `🔔 <b>Khách hàng tự đặt món mới</b>\n📍 Bàn số: <b>${tableNumber}</b>\n🍽 Tổng món: <b>${totalQuantity}</b> phần\n💵 Tổng tiền: <b>${totalPrice.toLocaleString('vi-VN')}đ</b>\nChi tiết:${dishDetails}\n\n<i>Hãy vào trang quản lý để xem nhé!</i>`
+      sendTelegramMessage(message)
+    }
+  } catch (error) {
+    // Ignore error
+  }
+
   return result
 }
 
@@ -251,6 +274,22 @@ export const guestPayOrdersController = async (guestId: number) => {
       }
     })
   ])
+
+  // Bắn thông báo Telegram cho Chủ quán
+  try {
+    if (ordersResult.length > 0) {
+      const tableNumber = ordersResult[0].tableNumber
+      let totalPrice = 0
+      ordersResult.forEach(order => {
+        totalPrice += order.dishSnapshot.price * order.quantity
+      })
+      const message = `💰 <b>Yêu cầu thanh toán từ khách</b>\n📍 Bàn số: <b>${tableNumber}</b>\n💵 Tạm tính: <b>${totalPrice.toLocaleString('vi-VN')}đ</b>\n\n<i>Khách hàng đang đợi thanh toán, vui lòng kiểm tra!</i>`
+      sendTelegramMessage(message)
+    }
+  } catch (error) {
+    // Ignore error
+  }
+
   return {
     orders: ordersResult,
     socketId: sockerRecord?.socketId

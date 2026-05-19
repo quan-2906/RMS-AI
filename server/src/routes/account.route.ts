@@ -10,7 +10,10 @@ import {
   getGuestList,
   getMeController,
   updateEmployeeAccount,
-  updateMeController
+  updateMeController,
+  generate2FAController,
+  verifySetup2FAController,
+  disable2FAController
 } from '@/controllers/account.controller'
 import { pauseApiHook, requireEmployeeHook, requireLoginedHook, requireOwnerHook } from '@/hooks/auth.hooks'
 import {
@@ -39,8 +42,15 @@ import {
   UpdateEmployeeAccountBody,
   UpdateEmployeeAccountBodyType,
   UpdateMeBody,
-  UpdateMeBodyType
+  UpdateMeBodyType,
+  Generate2FARes,
+  Generate2FAResType,
+  VerifySetup2FABody,
+  VerifySetup2FABodyType,
+  Disable2FABody,
+  Disable2FABodyType
 } from '@/schemaValidations/account.schema'
+import { MessageRes, MessageResType } from '@/schemaValidations/common.schema'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 
 export default async function accountRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
@@ -287,6 +297,59 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
         message: 'Lấy danh sách khách thành công',
         data: result as GetListGuestsResType['data']
       })
+    }
+  )
+
+  fastify.post<{ Reply: Generate2FAResType }>(
+    '/2fa/generate',
+    {
+      schema: {
+        response: {
+          200: Generate2FARes
+        }
+      },
+      preValidation: fastify.auth([pauseApiHook])
+    },
+    async (request, reply) => {
+      const qrCodeUrl = await generate2FAController(request.decodedAccessToken?.userId as number)
+      reply.send({
+        message: 'Tạo mã QR thành công',
+        data: { qrCodeUrl }
+      })
+    }
+  )
+
+  fastify.post<{ Reply: MessageResType; Body: VerifySetup2FABodyType }>(
+    '/2fa/verify-setup',
+    {
+      schema: {
+        response: {
+          200: MessageRes
+        },
+        body: VerifySetup2FABody
+      },
+      preValidation: fastify.auth([pauseApiHook])
+    },
+    async (request, reply) => {
+      await verifySetup2FAController(request.decodedAccessToken?.userId as number, request.body.otp)
+      reply.send({ message: 'Bật xác thực 2 bước thành công' })
+    }
+  )
+
+  fastify.post<{ Reply: MessageResType; Body: Disable2FABodyType }>(
+    '/2fa/disable',
+    {
+      schema: {
+        response: {
+          200: MessageRes
+        },
+        body: Disable2FABody
+      },
+      preValidation: fastify.auth([pauseApiHook])
+    },
+    async (request, reply) => {
+      await disable2FAController(request.decodedAccessToken?.userId as number, request.body.password)
+      reply.send({ message: 'Đã tắt xác thực 2 bước' })
     }
   )
 }

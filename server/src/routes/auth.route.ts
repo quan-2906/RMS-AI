@@ -3,7 +3,8 @@ import {
   loginController,
   loginGoogleController,
   logoutController,
-  refreshTokenController
+  refreshTokenController,
+  verify2FALoginController
 } from '@/controllers/auth.controller'
 import { requireLoginedHook } from '@/hooks/auth.hooks'
 import {
@@ -18,7 +19,9 @@ import {
   RefreshTokenBody,
   RefreshTokenBodyType,
   RefreshTokenRes,
-  RefreshTokenResType
+  RefreshTokenResType,
+  Verify2FABody,
+  Verify2FABodyType
 } from '@/schemaValidations/auth.schema'
 import { MessageRes, MessageResType } from '@/schemaValidations/common.schema'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
@@ -55,9 +58,46 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
     },
     async (request, reply) => {
       const { body } = request
-      const { accessToken, refreshToken, account } = await loginController(body)
+      const result = await loginController(body)
+      
+      if ('data' in result && result.data?.require2FA) {
+        reply.send({
+          message: result.message,
+          data: {
+            require2FA: true,
+            twoFactorToken: result.data.twoFactorToken
+          } as any
+        })
+        return
+      }
+
+      const { accessToken, refreshToken, account } = result as any
       reply.send({
         message: 'Đăng nhập thành công',
+        data: {
+          account: account,
+          accessToken,
+          refreshToken
+        }
+      })
+    }
+  )
+
+  fastify.post<{ Reply: LoginResType; Body: Verify2FABodyType }>(
+    '/verify-2fa',
+    {
+      schema: {
+        response: {
+          200: LoginRes
+        },
+        body: Verify2FABody
+      }
+    },
+    async (request, reply) => {
+      const { twoFactorToken, otp } = request.body
+      const { accessToken, refreshToken, account } = await verify2FALoginController(twoFactorToken, otp)
+      reply.send({
+        message: 'Xác thực 2 bước thành công',
         data: {
           account: account as LoginResType['data']['account'],
           accessToken,

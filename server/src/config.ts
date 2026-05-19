@@ -41,7 +41,9 @@ const configSchema = z.object({
   SERVER_TIMEZONE: z.string(),
   PAUSE_SOME_ENDPOINTS: z.enum(['true', 'false']).transform((val) => val === 'true'),
   GEMINI_API_KEY: z.string().optional(),
-  GROQ_API_KEY: z.string().optional()
+  GROQ_API_KEY: z.string().optional(),
+  TELEGRAM_BOT_TOKEN: z.string().optional(),
+  TELEGRAM_OWNER_CHAT_ID: z.string().optional()
 })
 
 const configServer = configSchema.safeParse(process.env)

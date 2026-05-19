@@ -8,6 +8,7 @@ export const AccountSchema = z.object({
   email: z.string(),
   role: z.enum([Role.Owner, Role.Employee]),
   avatar: z.string().nullable(),
+  isTwoFactorEnabled: z.boolean().default(false)
 });
 
 export type AccountType = z.TypeOf<typeof AccountSchema>;
@@ -172,3 +173,21 @@ export const CreateGuestRes = z.object({
 });
 
 export type CreateGuestResType = z.TypeOf<typeof CreateGuestRes>;
+
+export const Generate2FARes = z.object({
+  data: z.object({
+    qrCodeUrl: z.string()
+  }),
+  message: z.string()
+})
+export type Generate2FAResType = z.TypeOf<typeof Generate2FARes>
+
+export const VerifySetup2FABody = z.object({
+  otp: z.string().length(6)
+}).strict()
+export type VerifySetup2FABodyType = z.TypeOf<typeof VerifySetup2FABody>
+
+export const Disable2FABody = z.object({
+  password: z.string().min(6).max(100)
+}).strict()
+export type Disable2FABodyType = z.TypeOf<typeof Disable2FABody>

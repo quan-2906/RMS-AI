@@ -164,10 +164,12 @@ const request = async <Response>(
   // Đảm bảo logic dưới đây chỉ chạy ở phía client (browser)
   if (isClient) {
     const normalizeUrl = normalizePath(url);
-    if (["api/auth/login", "api/guest/auth/login"].includes(normalizeUrl)) {
+    if (["api/auth/login", "api/guest/auth/login", "api/auth/verify-2fa"].includes(normalizeUrl)) {
       const { accessToken, refreshToken } = (payload as LoginResType).data;
-      setAccessTokenToLocalStorage(accessToken);
-      setRefreshTokenToLocalStorage(refreshToken);
+      if (accessToken && refreshToken) {
+        setAccessTokenToLocalStorage(accessToken);
+        setRefreshTokenToLocalStorage(refreshToken);
+      }
     } else if ("api/auth/token" === normalizeUrl) {
       const { accessToken, refreshToken } = payload as {
         accessToken: string;

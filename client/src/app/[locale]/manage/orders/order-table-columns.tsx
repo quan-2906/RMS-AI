@@ -41,7 +41,7 @@ import OrderGuestDetail from "@/app/[locale]/manage/orders/order-guest-detail";
 type OrderItem = GetOrdersResType["data"][0];
 const useOrderTableColumns = (
   setOrderIdEdit: (value: number | undefined) => void,
-  orderObjectByGuestId: OrderObjectByGuestID,
+  orderObjectByGuestId: Record<number, GetOrdersResType["data"]>,
   changeStatus: (payload: {
     orderId: number;
     dishId: number;

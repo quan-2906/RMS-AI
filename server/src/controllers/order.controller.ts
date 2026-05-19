@@ -1,6 +1,7 @@
 import { DishStatus, OrderStatus, TableStatus } from '@/constants/type'
 import prisma from '@/database'
 import { CreateOrdersBodyType, UpdateOrderBodyType } from '@/schemaValidations/order.schema'
+import { sendTelegramMessage } from '@/utils/telegram'
 
 export const createOrdersController = async (orderHandlerId: number, body: CreateOrdersBodyType) => {
   const { guestId, orders } = body
@@ -40,7 +41,7 @@ export const createOrdersController = async (orderHandlerId: number, body: Creat
             data: {
               description: dish.description,
               image: dish.image,
-              images360: dish.images360,
+              images360: dish.images360 ?? undefined,
               name: dish.name,
               price: dish.price,
               dishId: dish.id,
@@ -79,6 +80,25 @@ export const createOrdersController = async (orderHandlerId: number, body: Creat
       }
     })
   ])
+
+  try {
+    if (ordersRecord.length > 0) {
+      const tableNumber = ordersRecord[0].tableNumber
+      const totalQuantity = ordersRecord.reduce((acc, order) => acc + order.quantity, 0)
+      let totalPrice = 0
+      let dishDetails = ''
+      ordersRecord.forEach(order => {
+        const dishName = order.dishSnapshot.name
+        const price = order.dishSnapshot.price
+        const qty = order.quantity
+        dishDetails += `\n- ${dishName} x${qty} (${(price * qty).toLocaleString('vi-VN')}đ)`
+        totalPrice += price * qty
+      })
+      const message = `🔔 <b>Nhân viên vừa tạo đơn mới</b>\n📍 Bàn số: <b>${tableNumber}</b>\n🍽 Tổng món: <b>${totalQuantity}</b> phần\n💵 Tổng tiền: <b>${totalPrice.toLocaleString('vi-VN')}đ</b>\nChi tiết:${dishDetails}`
+      sendTelegramMessage(message)
+    }
+  } catch (error) {}
+
   return {
     orders: ordersRecord,
     socketId: socketRecord?.socketId
@@ -155,6 +175,21 @@ export const payOrdersController = async ({ guestId, orderHandlerId }: { guestId
       }
     })
   ])
+
+  try {
+    if (ordersResult.length > 0) {
+      const tableNumber = ordersResult[0].tableNumber
+      const cashierName = ordersResult[0].orderHandler?.name ?? `ID ${orderHandlerId}`
+      const totalQuantity = ordersResult.reduce((acc, order) => acc + order.quantity, 0)
+      let totalPrice = 0
+      ordersResult.forEach(order => {
+        totalPrice += order.dishSnapshot.price * order.quantity
+      })
+      const message = `✅ <b>Đã thanh toán thành công</b>\n📍 Bàn số: <b>${tableNumber}</b>\n💵 Tổng tiền: <b>${totalPrice.toLocaleString('vi-VN')}đ</b> (${totalQuantity} món)\n👤 Thu ngân: <b>${cashierName}</b>`
+      sendTelegramMessage(message)
+    }
+  } catch (error) {}
+
   return {
     orders: ordersResult,
     socketId: sockerRecord?.socketId
@@ -200,7 +235,7 @@ export const updateOrderController = async (
         data: {
           description: dish.description,
           image: dish.image,
-          images360: dish.images360,
+          images360: dish.images360 ?? undefined,
           name: dish.name,
           price: dish.price,
           dishId: dish.id,
@@ -232,6 +267,14 @@ export const updateOrderController = async (
       guestId: result.guestId!
     }
   })
+
+  try {
+    const tableNumber = result.tableNumber
+    const dishName = result.dishSnapshot.name
+    const message = `🔄 <b>Cập nhật đơn hàng</b>\n📍 Bàn số: <b>${tableNumber}</b>\n🍽 Món: ${dishName}\nℹ️ Trạng thái mới: <b>${status}</b>`
+    sendTelegramMessage(message)
+  } catch (error) {}
+
   return {
     order: result,
     socketId: socketRecord?.socketId

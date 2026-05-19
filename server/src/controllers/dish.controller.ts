@@ -1,5 +1,6 @@
 import prisma from '@/database'
 import { CreateDishBodyType, UpdateDishBodyType } from '@/schemaValidations/dish.schema'
+import { sendTelegramMessage } from '@/utils/telegram'
 
 export const getDishList = async () => {
   const dishes = await prisma.dish.findMany({
@@ -70,25 +71,37 @@ export const getDishDetail = async (id: number) => {
   }
 }
 
-export const createDish = (data: CreateDishBodyType) => {
-  return prisma.dish.create({
-    data
+export const createDish = async (data: CreateDishBodyType) => {
+  const result = await prisma.dish.create({
+    data: data as any
   })
+  try {
+    sendTelegramMessage(`🍲 <b>Thêm món mới</b>\nTên món: ${result.name}\nGiá: ${result.price} VNĐ`)
+  } catch (error) {}
+  return result
 }
 
-export const updateDish = (id: number, data: UpdateDishBodyType) => {
-  return prisma.dish.update({
+export const updateDish = async (id: number, data: UpdateDishBodyType) => {
+  const result = await prisma.dish.update({
     where: {
       id
     },
-    data
+    data: data as any
   })
+  try {
+    sendTelegramMessage(`📝 <b>Cập nhật món ăn</b>\nTên món: ${result.name}`)
+  } catch (error) {}
+  return result
 }
 
-export const deleteDish = (id: number) => {
-  return prisma.dish.delete({
+export const deleteDish = async (id: number) => {
+  const result = await prisma.dish.delete({
     where: {
       id
     }
   })
+  try {
+    sendTelegramMessage(`🗑 <b>Xóa món ăn</b>\nTên món: ${result.name}`)
+  } catch (error) {}
+  return result
 }

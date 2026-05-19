@@ -7,6 +7,12 @@ export const useLoginMutation = () => {
   });
 };
 
+export const useVerify2FAMutation = () => {
+  return useMutation({
+    mutationFn: authApiRequest.verify2FA,
+  });
+};
+
 export const useLogoutMutation = () => {
   return useMutation({
     mutationFn: authApiRequest.logout,

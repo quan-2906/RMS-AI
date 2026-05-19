@@ -14,9 +14,9 @@ import { useForm } from "react-hook-form";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLoginMutation } from "@/queries/useAuth";
+import { useLoginMutation, useVerify2FAMutation } from "@/queries/useAuth";
 import { generateSocketInstace, handleErrorApi } from "@/lib/utils";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import envConfig from "@/config";
 import { useTranslations } from "next-intl";
 import { LoaderCircle } from "lucide-react";
@@ -58,6 +58,11 @@ export default function LoginForm() {
   const clearTokens = searchParams?.get("clearTokens");
   const setSocket = useAppStore((state) => state.setSocket);
   const setRole = useAppStore((state) => state.setRole);
+  
+  const [require2FA, setRequire2FA] = useState(false);
+  const [twoFactorToken, setTwoFactorToken] = useState("");
+  const [otp, setOtp] = useState("");
+  const verify2FAMutation = useVerify2FAMutation();
   const displayError = (message?: string) => {
     if (!message) return null;
     return isLoginErrorKey(message) ? errorMessageT(message as any) : message;
@@ -81,12 +86,20 @@ export default function LoginForm() {
     if (loginMutation.isPending) return;
     try {
       const result = await loginMutation.mutateAsync(data);
+      if (result.payload.data.require2FA) {
+        setRequire2FA(true);
+        setTwoFactorToken(result.payload.data.twoFactorToken!);
+        toast("", {
+          description: "Vui lòng nhập mã xác thực 2 bước từ Google Authenticator",
+        });
+        return;
+      }
       toast("", {
         description: result.payload.message,
       });
-      setRole(result.payload.data.account.role);
+      setRole(result.payload.data.account!.role);
       router.push("/manage/dashboard");
-      setSocket(generateSocketInstace(result.payload.data.accessToken));
+      setSocket(generateSocketInstace(result.payload.data.accessToken!));
     } catch (error: any) {
       const errors =
         (error?.payload?.errors as { field: string; message: string }[]) ?? [];
@@ -99,6 +112,29 @@ export default function LoginForm() {
       } else {
         handleErrorApi({ error, setError: form.setError });
       }
+    }
+  };
+
+  const handleVerifyOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!otp || otp.length !== 6) {
+      toast.error("Vui lòng nhập đủ 6 chữ số");
+      return;
+    }
+    if (verify2FAMutation.isPending) return;
+    try {
+      const result = await verify2FAMutation.mutateAsync({
+        twoFactorToken,
+        otp
+      });
+      toast("", {
+        description: "Xác thực 2 bước thành công",
+      });
+      setRole(result.payload.data.account!.role);
+      router.push("/manage/dashboard");
+      setSocket(generateSocketInstace(result.payload.data.accessToken!));
+    } catch (error: any) {
+      handleErrorApi({ error });
     }
   };
 
@@ -117,97 +153,136 @@ export default function LoginForm() {
       </CardHeader>
 
       <CardContent className="p-0">
-        <Form {...form}>
-          <form
-            className="flex flex-col gap-4"
-            noValidate
-            onSubmit={form.handleSubmit(onSubmit)}
-          >
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field, formState: { errors } }) => (
-                <FormItem className="space-y-2">
-                  <Label htmlFor="email" className="font-label-caps text-[10px] uppercase tracking-[0.2em] text-muted-foreground ml-1">Email</Label>
-                  <div className="relative group">
-                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 text-xl group-focus-within:text-secondary transition-colors">mail</span>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder={t("placeholderEmail")}
-                      className="bg-muted/30 border-border rounded-xl h-14 pl-11 pr-4 text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary/20 transition-all placeholder:text-muted-foreground/40"
-                      {...field}
-                    />
-                  </div>
-                  <FormMessage className="text-xs text-red-500 font-medium">
-                    {Boolean(errors.email?.message) && displayError(errors.email?.message)}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field, formState: { errors } }) => (
-                <FormItem className="space-y-2">
-                  <div className="flex justify-between items-center ml-1">
-                    <Label htmlFor="password" className="font-label-caps text-[10px] uppercase tracking-[0.2em] text-muted-foreground">{t("labelPassword")}</Label>
-                    <a className="font-label-caps text-[10px] uppercase tracking-widest text-secondary hover:text-foreground transition-colors font-bold" href="#">{t("forgotPassword")}</a>
-                  </div>
-                  <div className="relative group">
-                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 text-xl group-focus-within:text-secondary transition-colors">lock</span>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="••••••••"
-                      className="bg-muted/30 border-border rounded-xl h-14 pl-11 pr-4 text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary/20 transition-all placeholder:text-muted-foreground/40"
-                      {...field}
-                    />
-                  </div>
-                  <FormMessage className="text-xs text-red-500 font-medium">
-                    {Boolean(errors.password?.message) && displayError(errors.password?.message as any)}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
+        {require2FA ? (
+          <form className="flex flex-col gap-4" onSubmit={handleVerifyOTP}>
+            <div className="space-y-2">
+              <Label htmlFor="otp" className="font-label-caps text-[10px] uppercase tracking-[0.2em] text-muted-foreground ml-1">Mã xác thực 2 bước</Label>
+              <div className="relative group">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 text-xl group-focus-within:text-secondary transition-colors">security</span>
+                <Input
+                  id="otp"
+                  type="text"
+                  placeholder="Nhập mã 6 số"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, "").slice(0, 6))}
+                  className="bg-muted/30 border-border rounded-xl h-14 pl-11 pr-4 text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary/20 transition-all placeholder:text-muted-foreground/40 text-center tracking-[0.5em] text-lg font-bold"
+                />
+              </div>
+            </div>
 
             <Button 
               type="submit" 
               className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 font-bold h-14 rounded-xl mt-4 shadow-xl shadow-secondary/20 transition-all active:scale-[0.98]"
-              disabled={loginMutation.isPending}
+              disabled={verify2FAMutation.isPending}
             >
-              {loginMutation.isPending && (
+              {verify2FAMutation.isPending && (
                 <LoaderCircle className="w-5 h-5 mr-2 animate-spin" />
               )}
-              {t("buttonLogin")}
+              Xác nhận
             </Button>
 
-            <div className="flex items-center gap-4 py-2">
-              <div className="h-[1px] flex-grow bg-border"></div>
-              <span className="font-label-caps text-[10px] uppercase tracking-widest text-muted-foreground/60">{t("or")}</span>
-              <div className="h-[1px] flex-grow bg-border"></div>
-            </div>
-
-            <Link href={googleOauthUrl} className="w-full">
-              <Button 
-                variant="outline" 
-                className="w-full bg-muted/20 border-border text-foreground hover:bg-accent h-14 rounded-xl flex items-center justify-center gap-3 transition-colors shadow-sm" 
-                type="button"
-              >
-                <img alt="Google Logo" className="w-6 h-6 object-contain" src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" />
-                <span className="font-medium">{t("loginWithGoogle")}</span>
-              </Button>
-            </Link>
-
-            <div className="text-center mt-4">
-              <Link href="/" className="text-sm text-muted-foreground hover:text-secondary transition-all inline-flex items-center gap-2 group/back">
-                <span className="material-symbols-outlined text-base group-hover/back:-translate-x-1 transition-transform">arrow_back</span>
-                <span className="font-medium">{t("backToHome")}</span>
-              </Link>
-            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setRequire2FA(false)}
+              className="w-full h-14 rounded-xl font-medium"
+            >
+              Quay lại
+            </Button>
           </form>
-        </Form>
+        ) : (
+          <Form {...form}>
+            <form
+              className="flex flex-col gap-4"
+              noValidate
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field, formState: { errors } }) => (
+                  <FormItem className="space-y-2">
+                    <Label htmlFor="email" className="font-label-caps text-[10px] uppercase tracking-[0.2em] text-muted-foreground ml-1">Email</Label>
+                    <div className="relative group">
+                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 text-xl group-focus-within:text-secondary transition-colors">mail</span>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder={t("placeholderEmail")}
+                        className="bg-muted/30 border-border rounded-xl h-14 pl-11 pr-4 text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary/20 transition-all placeholder:text-muted-foreground/40"
+                        {...field}
+                      />
+                    </div>
+                    <FormMessage className="text-xs text-red-500 font-medium">
+                      {Boolean(errors.email?.message) && displayError(errors.email?.message)}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field, formState: { errors } }) => (
+                  <FormItem className="space-y-2">
+                    <div className="flex justify-between items-center ml-1">
+                      <Label htmlFor="password" className="font-label-caps text-[10px] uppercase tracking-[0.2em] text-muted-foreground">{t("labelPassword")}</Label>
+                      <a className="font-label-caps text-[10px] uppercase tracking-widest text-secondary hover:text-foreground transition-colors font-bold" href="#">{t("forgotPassword")}</a>
+                    </div>
+                    <div className="relative group">
+                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 text-xl group-focus-within:text-secondary transition-colors">lock</span>
+                      <Input
+                        id="password"
+                        type="password"
+                        placeholder="••••••••"
+                        className="bg-muted/30 border-border rounded-xl h-14 pl-11 pr-4 text-foreground focus:border-secondary focus:ring-1 focus:ring-secondary/20 transition-all placeholder:text-muted-foreground/40"
+                        {...field}
+                      />
+                    </div>
+                    <FormMessage className="text-xs text-red-500 font-medium">
+                      {Boolean(errors.password?.message) && displayError(errors.password?.message as any)}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
+
+              <Button 
+                type="submit" 
+                className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 font-bold h-14 rounded-xl mt-4 shadow-xl shadow-secondary/20 transition-all active:scale-[0.98]"
+                disabled={loginMutation.isPending}
+              >
+                {loginMutation.isPending && (
+                  <LoaderCircle className="w-5 h-5 mr-2 animate-spin" />
+                )}
+                {t("buttonLogin")}
+              </Button>
+
+              <div className="flex items-center gap-4 py-2">
+                <div className="h-[1px] flex-grow bg-border"></div>
+                <span className="font-label-caps text-[10px] uppercase tracking-widest text-muted-foreground/60">{t("or")}</span>
+                <div className="h-[1px] flex-grow bg-border"></div>
+              </div>
+
+              <Link href={googleOauthUrl} className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full bg-muted/20 border-border text-foreground hover:bg-accent h-14 rounded-xl flex items-center justify-center gap-3 transition-colors shadow-sm" 
+                  type="button"
+                >
+                  <img alt="Google Logo" className="w-6 h-6 object-contain" src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" />
+                  <span className="font-medium">{t("loginWithGoogle")}</span>
+                </Button>
+              </Link>
+
+              <div className="text-center mt-4">
+                <Link href="/" className="text-sm text-muted-foreground hover:text-secondary transition-all inline-flex items-center gap-2 group/back">
+                  <span className="material-symbols-outlined text-base group-hover/back:-translate-x-1 transition-transform">arrow_back</span>
+                  <span className="font-medium">{t("backToHome")}</span>
+                </Link>
+              </div>
+            </form>
+          </Form>
+        )}
       </CardContent>
     </Card>
   );

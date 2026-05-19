@@ -100,3 +100,29 @@ export const useCreateGuestMutation = () => {
     mutationFn: accountApiRequest.createGuest,
   });
 };
+
+export const useGenerate2FAMutation = () => {
+  return useMutation({
+    mutationFn: accountApiRequest.generate2FA,
+  });
+};
+
+export const useVerifySetup2FAMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: accountApiRequest.verifySetup2FA,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["account-me"] });
+    },
+  });
+};
+
+export const useDisable2FAMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: accountApiRequest.disable2FA,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["account-me"] });
+    },
+  });
+};

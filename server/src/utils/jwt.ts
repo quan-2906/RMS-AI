@@ -63,3 +63,26 @@ export const verifyRefreshToken = (token: string) => {
   })
   return verifySync(token) as TokenPayload
 }
+
+export const signTwoFactorToken = (
+  payload: Pick<TokenPayload, 'userId'> & {
+    exp?: number
+  },
+  options?: SignerOptions
+) => {
+  const optionSigner: Partial<SignerOptions & { key: string | Buffer | PrivateKey }> = {
+    key: envConfig.ACCESS_TOKEN_SECRET, 
+    algorithm: 'HS256',
+    expiresIn: ms('5m'), // Token chỉ có tác dụng trong 5 phút
+    ...options
+  }
+  const signSync = createSigner(optionSigner)
+  return signSync({ ...payload, tokenType: TokenType.TwoFactorToken })
+}
+
+export const verifyTwoFactorToken = (token: string) => {
+  const verifySync = createVerifier({
+    key: envConfig.ACCESS_TOKEN_SECRET
+  })
+  return verifySync(token) as TokenPayload
+}
